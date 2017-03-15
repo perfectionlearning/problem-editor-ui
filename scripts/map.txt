@@ -1,0 +1,188 @@
+// selectors:
+//	no prefix: table
+//	* is the current row in a filtered list
+//	.field
+//	@sortField
+//	#filter
+
+// selector operators:
+//	:variable -- reference a passed-in variable
+//	& | ( )   -- Boolean logic for filters
+
+//	_attrib is a special element that defines element behavior
+// _attrib options:
+//	Post:
+//	Type:
+//	Filter:
+
+// Types:
+//	default: fields are stored individually
+//	merge: fields are merged together into a single array
+//	collection: fields are merged together into an associative array
+//	filteredList: fields are drawn from a set of rows fetched using a filter, and placed into a collection.  Basically a foreach.
+
+// Cache row fetches for a given key
+// Should sorts be made more explicit?
+
+problemMap = array(
+	id => ':problem_id',
+	q => 'problems.problem_desc #problem_id=:problem_id',
+	q_prefix => 'problems.prefix #problem_id=:problem_id',
+
+	// Store the answer in several different formats.  Only one is relevent to the current problem.
+	a => array(
+		text => 'problems.answer_desc #problem_id=:problem_id',
+
+		multChoice => array(
+			_attrib => array( post => cleanMCSolution ),	// splits and sorts the solution string
+			'problem_parts.solution #problem_id=:problem_id',
+		),
+
+		graph => 'problems.problem_desc #problem_id=:problem_id'		// This might not be correct: we might want graphequations instead of q
+	),
+
+	ansType => 'problems.answer_type #problem_id=:problem_id',
+	equiv => 'problems.equivalence_rules #problem_id=:problem_id',
+	cdID => 'problems.chapter_id #problem_id=:problem_id',
+	qImg => 'problems.illuslink #problem_id=:problem_id',
+
+	// Graph formulas come from both the graphpoints and graphequations tables (which is unfortunate and unnecessary!)
+	// Merge the results into a single list, cleaning up each one into a consistent format.
+	graphequations => array(
+		_attrib => array( type => 'merge' ),
+		array(
+			_attrib => array( post => cleanPoint ),
+			'graphpoints.point_val #problem_id=:problem_id @gp_order',
+		),
+		array(
+			_attrib => array( post => cleanEQ ),
+			'graphequations.equation #problem_id=:problem_id @ge_order',
+		)
+	),
+
+	// Graph axis information comes from graphParams.  The results require filtering because each
+	// row is used for multiple purposes, depending on the parm_type field.
+	graphParms => array(
+		x => array(
+			_attrib => array( post => cleanRange ),
+			'graphparms.parm_val #problem_id=:problem_id&parm_type="rangeX"'
+		),
+
+		y => array(
+			_attrib => array( post => cleanRange ),
+			'graphparms.parm_val #problem_id=:problem_id&parm_type="rangeY"'
+		),
+
+		skip => array(
+			_attrib => array( post => cleanRange ),
+			'graphparms.parm_val #problem_id=:problem_id&parm_type="labelSkip"'
+		),
+
+		usePiLabels => array(
+			_attrib => array( post => cleanRange ),
+			'graphparms.parm_val #problem_id=:problem_id&parm_type="usePiLabels"'
+		)
+	),
+
+	// Multiple choice options (only radio and checkbox currently supported)
+	// These aren't randomized at this point.
+	choices => array(
+		_attrib => array( type => 'collection' ),
+		id => 'problem_part_poss.ppp_id #problem_id=:problem_id @ppp_order',
+		text => 'problem_part_poss.text #problem_id=:problem_id @ppp_order'
+	),
+
+	steps => array(
+		_attrib => array(
+			type => 'filteredList',
+			filter => 'problems #parent_id=:problem_id @number',	// Match all problems where the parent id = our current problem_id
+
+			post => cleanAnswer
+		),
+
+		q => '*.problem_desc',
+
+		a => array(
+			text => '*.answer_desc',
+
+			multChoice => array(
+				_attrib => array( post => cleanMCSolution ),	// splits and sorts the solution string
+				'problem_parts.solution #problem_id=*.problem_id',
+			),
+
+			graph => '*.problem_desc'		// This might not be correct
+		),
+
+		ansType => '*.answer_type',
+
+		// Create choice objects, one for each element of the filter.
+		choices => array(
+			_attrib => array( type => 'collection' ),
+			id => 'problem_part_poss.ppp_id #problem_id=*.problem_id @ppp_order',
+			data => 'problem_part_poss.text #problem_id=*.problem_id @ppp_order'
+		),
+
+//		wb => 'problems.wb_help #problem_id=:problem_id',
+		wb => 'problem_helps.object_name #problem_id=:problem_id & phelp_type_id!=5',
+
+		hint => 'problems.hint #problem_id=:problem_id'
+	),
+
+	singleStep => array(
+		_attrib => array(
+			filter => 'problems #parent_id=:problem_id & number=:number',	// Match all problems where the parent id = our current problem_id
+		),
+
+		q => 'problems.problem_desc #problem_id=:problem_id',
+
+		a => array(
+			text => '*.answer_desc',
+
+			multChoice => array(
+				_attrib => array( post => cleanMCSolution ),	// splits and sorts the solution string
+				'problem_parts.solution #problem_id=*.problem_id',
+			),
+
+			graph => '*.problem_desc'		// This might not be correct
+		),
+
+		ansType => '*.answer_type',
+
+		// Create choice objects, one for each element of the filter.
+		choices => array(
+			_attrib => array( type => 'collection' ),
+			id => 'problem_part_poss.ppp_id #problem_id=*.problem_id @ppp_order',
+			data => 'problem_part_poss.text #problem_id=*.problem_id @ppp_order'
+		),
+
+//		wb => 'problems.wb_help #problem_id=:problem_id',
+		wb => 'problem_helps.object_name #problem_id=:problem_id & phelp_type_id!=5',
+
+		hint => 'problems.hint #problem_id=:problem_id'
+	),
+
+	vars => array(
+		_attrib => array(
+			type: 'collection'
+			query: 'problem_variables #problem_id=:problem_id'
+		),
+
+		label => '.label',
+		min => '.minval',
+		max => '.maxval',
+		step => '.step',
+		sigDig => '.sigdig',
+		sciNote => '.sn',
+	)
+)
+
+
+tagMap = array(
+	tagTypes => 'tag_categories.tag_category_name',
+
+	tagByType => 'tags.tag_name #tag_category=:category',
+
+	// :tagID1, :tagID2, :tagID3
+//	skillsByTags => 'skills.skill_name #skill_tags.',
+
+)

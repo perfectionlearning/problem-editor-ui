@@ -1,0 +1,426 @@
+#Stage {
+/*	width:1222px; */
+}
+/* ======== Container for Review Tool (Whiteboard) ========== */
+#review-container {
+	float:right;
+	width:250px;
+}
+
+.reviewContainerBlock div {
+	font-size: 10pt;
+	font-family: arial;
+}
+/* ======== Review Pane ======== */
+
+ul.reviewMenu > li {
+	background: #8ab3f0;
+	border-radius: 5px;
+	color:white;
+	cursor:pointer;
+	font:bold 18px arial;
+	padding:3px;
+/*	text-shadow:0px 1px #333; */
+}
+
+/* ======== Review Pane ======== */
+
+/* "Pass" text on the review pane */
+.pass {
+	font-size: 18px;
+	background: #126936;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+}
+.hist-pass {
+	color:#126936;
+}
+/* "Fail" text on the review pane */
+.fail {
+	font-size: 18px;
+	background:#ad1a1a;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+}
+/* "Fail" text on the review pane */
+.default-status {
+	font-size: 18px;
+	background:black;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+}
+.no-status-details {
+	display:none;
+}
+.hist-fail {
+	color:#ad1a1a;
+}
+.when {
+	font-size:8pt;
+}
+.user {
+	font-size: 10pt;
+	font-weight: bold;
+}
+.object-name {
+	font-size:8pt;
+}
+.notes {
+    background: none repeat scroll 0 0 #E7F1FF;
+    border: 1px solid #466186;
+    border-radius: 3px 3px 3px 3px;
+    color: #333333;
+    display: block;
+    margin-top: 3px;
+    padding: 5px;
+}
+.no-notes {
+	display:none;
+}
+.recent-note {
+	position:relative;
+}
+.append-note {
+	display:none;
+	position:absolute;
+	right:0;
+	width:30px;
+	height:20px;
+	background:#f90;
+	color:white;
+	border-radius:3px;
+	cursor:pointer;
+}
+.note-to-append {
+	border: 1px solid #8ab3f0;
+	clear:left;
+	font-family: Lucida Grande,Lucida Sans,Arial,sans-serif;
+    font-size: 1em;
+	width:98%;
+}
+.recent-note:hover .append-note {
+	display:block;
+}
+.rightEdge {
+	text-align: right;
+	float: right;
+	position:relative;
+}
+
+div.reviewBlock {
+	clear:both;
+}
+.right div {
+	font:12px arial;
+}
+.clear {
+	clear:both;
+}
+
+.right button {
+	margin: 2px 2px 0 0;
+	width: 100%;
+	font: 14px Arial;
+}
+
+/* Menu for items on review pane */
+ul.reviewMenu {
+	list-style: none outside none;
+	margin: 0;
+	padding: 0;
+}
+
+ul.reviewMenu > li:hover ul {
+	display:block;
+}
+
+ul.reviewMenu ul {
+    background: none repeat scroll 0 0 #FFFFEE;
+	border-radius:3px;
+    display: none;
+    list-style: none outside none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    right: 5px;
+	top:5px;
+    text-align: left;
+	z-index:100;
+	width:100px;
+	font:normal 14px arial;
+}
+
+ul.reviewMenu ul li {
+    border-bottom: 1px solid #999;
+    border-left: 1px solid #999;
+    border-right: 1px solid #999;
+    /*font: 8pt arial;*/
+	font: inherit;
+	font-weight: normal;
+	color: #2E6E9E;
+    padding: 2px;
+	cursor:pointer;
+	text-shadow:none;
+}
+
+ul.reviewMenu ul li:hover {
+	background:#eaf4fd;
+}
+
+ul.reviewMenu ul li:first-child {
+    border-top: 1px solid #999;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+}
+
+ul.reviewMenu ul li:last-child {
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
+/* Review Menu Popups */
+
+.reviewPopupWrapper {
+/*
+	position:absolute;
+	right:58px;
+*/
+	border:1px solid #466186;
+	border-radius:3px;
+	background:white;
+	width:360px; /* don't like this being hardcoded, but that's CSS. */
+	text-align:left;
+}
+.statusHeader {
+	background:#8AB3F0;
+	font:normal 9pt arial;
+	color:white;
+	padding:2px;
+}
+
+.closeStatus {
+	positon: relative;
+	background: none repeat scroll 0 0 #8AB3F0;
+    border: 1px solid white;
+    border-radius: 3px 3px 3px 3px;
+    display: block;
+    float: right;
+    height: 11px;
+    padding-left: 3px;
+    width: 10px;
+	cursor: pointer;
+}
+.closeStatus > span {
+    display: block;
+    position: relative;
+    top: -3px;
+}
+.status {
+	font-weight:bold;
+}
+.latest-status {
+	font-weight:bold;
+	border-radius:5px;
+	padding:3px;
+	color:white;
+	display:block;
+	float:left;
+}
+.reviewPopup {
+	padding:3px;
+	font:normal 9pt arial;
+	text-align:left;
+}
+
+.commentHeader {
+	margin-top:5px;
+	margin-bottom:-1px;
+	background:#8AB3F0;
+	border-radius:6px 6px 0 0;
+	padding: 0 3px;
+	color:white;
+	float:left;
+}
+.reviewPopup textarea {
+	border: 1px solid #8ab3f0;
+	clear:left;
+	font-family: Lucida Grande,Lucida Sans,Arial,sans-serif;
+    font-size: 1em;
+	width:98%;
+}
+.reviewPopup .errorMsg {
+	font:inherit;
+	display:none;
+}
+.review-comments-buttons {
+	font:normal 9pt arial;
+	text-align:right;
+}
+
+.review-comments-buttons a {
+	text-decoration:none;
+	color:white;
+	background: #f90;
+	border-radius:3px;
+	padding:3px;
+	margin:3px;
+	display:block;
+	float:right;
+}
+.review-comments-buttons a:hover, .review-comments-buttons a:active {
+	background:#ff8400;
+}
+
+/* Review Pane:  Failure Popup */
+div.commonFailuresWrapper {
+	position:relative;
+}
+
+.commonFailuresHeader > span {
+	font-weight:bold;
+	color:#8ab3f0;
+	cursor:pointer;
+}
+ul.commonFailures {
+	display:none;
+	position:absolute;
+	margin: 0;
+	padding: 0;
+	background:#ffe;
+	list-style:none;
+	border:1px solid #999;
+}
+ul.commonFailures li {
+	background:white;
+	border-top:1px dotted #ccc;
+	font:inherit;
+	padding:2px;
+	cursor:pointer;
+}
+ul.commonFailures li:hover {
+	background:#e7f1ff;
+}
+ul.commonFailures > li:first-child {
+	border-top:none;
+}
+
+/* Review Pane:  Assign to Popup */
+div.commonFailuresWrapper {
+	position:relative;
+}
+
+.assignHeader > span {
+	font-weight:bold;
+	color:#8ab3f0;
+	cursor:pointer;
+}
+ul.user-list {
+	display:none;
+	position:absolute;
+	margin: 0;
+	padding: 0;
+	background:#ffe;
+	list-style:none;
+	border:1px solid #999;
+}
+ul.user-list li {
+	background:white;
+	border-top:1px dotted #ccc;
+	font:inherit;
+	padding:2px;
+	cursor:pointer;
+}
+ul.user-list li:hover {
+	background:#e7f1ff;
+}
+ul.user-list > li:first-child {
+	border-top:none;
+}
+
+/* Review Pane:  History Popup
+ *   .history-list contains .hist-status, .hist-who, .hist-date, and,
+ *   on a separate row, .hist-notes.
+ *
+ *   .reviewPopupWrapper: 288px
+ *   .reviewPopup: padding: 3px
+ *   .history-list: 285px
+ *   .hist-status: 95, .hist-who: 50, .hist-date: 120 -> 265px
+ *   .hist-notes: 263px
+ */
+div.history-list {
+	font:inherit;
+	height:300px;
+	width:100%;  /* needs to coordinate with reviewPopupWrapper */
+	overflow-y:scroll;
+}
+.hist-cols {
+	background:#e7f1ff;
+	border-bottom:1px solid #BBCFEB;
+}
+.hist-date, .hist-who, .hist-status, .hist-assigned {
+	float:left;
+	font:inherit;
+}
+.hist-date {
+	width:120px;
+}
+.hist-who {
+	width:50px;
+}
+.hist-assigned {
+	width:70px;
+	color:green;
+}
+.hist-status {
+	width:90px;
+}
+.hist-notes {
+	clear:left;
+	border-bottom:1px dotted gray;
+	border-radius: 3px 3px 0 0;
+	font-size:inherit;
+	font-family:inherit;
+	font-style:italic;
+	background:#eee;
+	color:#333;
+	width:98%;
+	padding-left:3px;
+	padding-bottom:2px;
+}
+.hist-no-notes {
+	clear:left;
+	border-bottom:1px dotted gray;
+	height:0;
+	width:266px; /* same width as .hist-notes width + padding-left. */
+}
+.hist-notes:last-child, .hist-no-notes:last-child {
+	border-bottom:none;
+}
+
+.clear {
+	clear:both;
+}
+/* Query:  History Popup
+ */
+.queryReviewWrapper {
+	position:relative;
+}
+.queryReviewWrapper > .positioner {
+	position:absolute;
+	right:100px;
+	top:-25px;
+}
+
+/* Review: History Popup
+*/
+.reviewPopupPlaceholder {
+	position:relative;
+}
+.reviewPopupPlaceholder > .positioner {
+	position:absolute;
+	right:58px;
+	z-index:10;
+}

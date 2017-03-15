@@ -1,0 +1,1310 @@
+/* jQuery UI doesn't properly disable clicks for disabled tabs */
+.ui-state-disabled {
+	pointer-events: none;
+	cursor: default;
+}
+
+select.inp {
+	vertical-align: middle;
+}
+
+.richEdit {
+	width: 600px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: black;
+	padding: 4px;
+}
+
+div.padded {
+	padding: 4px;
+	margin-right: 20px;
+}
+
+#title {
+	font: 20px Arial;
+	background-color: #FFD280;
+	padding: 4px;
+	border: 1px solid #4297d7;
+}
+
+.header {
+	font: bold 16px Arial;
+	margin: 0 4px 8px 0;
+}
+
+.header_ro {
+	font: bold 16px Arial;
+	margin: 0 4px 8px 0;
+	color: gray;
+}
+
+.topgap {
+	margin: 24px 0 8px 0;
+}
+
+.value {
+	font: 14px Arial;
+	background-color: white;
+	padding: 4px;
+	margin: 0 15px 8px 0;
+	border: 1px solid black;
+}
+
+.value_ro {
+	font: 14px Arial;
+	margin: 0 15px 8px 0;
+	color: gray;
+}
+
+.info {
+	font: 14px Arial;
+	margin: 0 15px 8px 0;
+}
+
+.text {
+	margin-bottom: 15px;
+}
+
+select.pulldown {
+	color: black;
+	background-color: white;
+	cursor: pointer;
+	margin-left: 4px;
+	font: 14px Arial;
+}
+
+.changed .header{
+	color: #E60000;
+}
+
+.comments {
+	width: 99%;
+	background-color: #fffedb;
+	border:1px solid #826800;
+}
+
+.highlight {
+	color: #D98704;
+}
+
+.commentHeader {
+	margin-top: 6px;
+	font:normal 9pt arial;
+}
+
+#validate, #cancel {
+	font: 20px Arial;
+	margin-left: 6px;
+}
+
+#break, #return {
+	margin: 16px 6px 0 0;
+}
+
+.varExample {
+	margin-left: 8px;
+}
+
+/* Text areas, but only on the left side */
+.left textarea {
+	width: 500px;
+	color: black;
+	border: 1px solid black;
+	font: 16px Arial;
+	padding: 2px;
+}
+
+/* Focused text areas, but only on the left side */
+.left textarea:focus, input[type='text']:focus {
+	background-color: #F6FC81;
+}
+
+.left button {
+	margin: 0 0 0 6px;
+}
+
+div.left {
+	padding-bottom: 4px; /* Keep compact items from feeling too squished */
+}
+
+.startEdit {
+	cursor: pointer;
+}
+
+.stopEdit {
+	cursor: pointer;
+}
+
+.taglist {
+	text-align: left;
+}
+
+.listHeader {
+	font:  bold 20px Arial;
+	text-align: center;
+}
+
+.simpleInput {
+	width: 50px;
+	margin-right: 12px;
+}
+
+.graph {
+	width: 200px;
+	height: 200px;
+	margin-left: 10px;
+}
+
+/* Variable highlighting, both in MathML and regular text */
+.hasVariable {
+	color: #431AD6;
+}
+
+.home, .logout {
+	margin: 4px 4px 0 10px;
+}
+
+/* Text that was moved from answers to questions */
+.kinput_fail {
+	color: red;
+}
+
+/* Revert icon at the item level */
+/* Hide the revert icon unless it is .revert */
+.right>img {
+	display: none;
+}
+.revert>.right>img {
+	display: inline;
+}
+
+.revertIcon {
+	cursor: pointer;
+
+	opacity: 0.4;
+	transition: all 0.3s ease-in-out;
+}
+
+.revertIcon:hover {
+	opacity: 1;
+	transition: all 0.3s ease-in-out;
+	animation: fadein 1s;
+}
+
+/* Revert icon in steps */
+div.stepHeader>img {
+	display: none;
+}
+div.changed>div.stepHeader>img.stepRevert {
+	display: inline;
+}
+
+/* Can't use .revertIcon because we need a separate handler */
+/* We could add a third, common class however */
+.stepRevert {
+	float: right;
+	cursor: pointer;
+
+	opacity: 0.4;
+	transition: all 0.3s ease-in-out;
+}
+
+.stepRevert:hover {
+	opacity: 1;
+	transition: all 0.3s ease-in-out;
+	animation: fadein 1s;
+}
+
+/* ======== MathML ======== */
+.math {
+	white-space: nowrap;
+}
+
+math {
+	text-align: left;
+	font-family: ESSTIX Math;
+	font-size: 14px;
+	display: inline;
+	padding-right: 4px;
+	white-space: nowrap;
+}
+
+/* This is a work-around for a Firefox bug (491384) that causes tables to be centered until clicked. */
+/* Unfortunately, since the alignment attribute is ignored, it prevents variable alignment (e.g., alignment of the equal sign) */
+mtd {
+	text-align: left;
+}
+
+mfrac {
+	font-size: 18px;
+}
+
+menclose[notation="box"], .menclose {
+	color: red;
+}
+
+/* Long form is included here so it will override the normal CSS rule */
+menclose[notation="box"].broken, .broken {
+	color: #FF00FF;
+}
+
+/* ======== Steps ======== */
+#stepTitle {
+	font: bold 20px Arial;
+	margin-right: 20px;
+}
+
+.stepHeader {
+	font: bold 16px Arial;
+	padding: 2px;
+	margin: 0 4px 6px -2px;
+	background-color: #5C829C;
+}
+
+.stepPad {
+	margin-top: 12px;
+}
+
+.substep {
+	margin-bottom: 10px;
+/*	border-top: 1px solid #888; */
+}
+
+.breakFloat {
+	clear: both;
+	font-size: 2px;
+}
+
+#split {
+	margin-left: 20px;
+	background-color: #B4DBFA;
+
+	padding: 3px;
+	border: solid 1px black;
+}
+
+#split button {
+	margin-right: 12px;
+}
+
+.breakFloatSplit {
+	font-size: 2px;
+}
+
+/* ======== Problem Conversion ======== */
+#convert {
+	margin-left: 20px;
+}
+
+/* ======== Problem Test (Review) ======== */
+#reviewPrefix {
+	font-weight: bold;
+	margin-bottom: 2px;
+}
+
+.reviewQ {
+	margin-bottom: 14px;
+}
+
+.stepQ {
+	margin-left: 20px;
+}
+
+#reviewAnsEq {
+	min-width: 200px;
+	min-height: 45px;
+	background-color: white;
+	border: 1px solid black;
+}
+
+#reviewAnsMulti {
+	margin-left: 20px;
+	position: relative;
+}
+
+.mcAnswer {
+	margin-left: 20px;
+}
+
+.reviewStepAnsOuter {
+	margin-bottom: 14px;
+}
+
+.reviewStepAnswer {
+	margin-left: 20px;
+/*
+	padding: 10px;
+	background-color: white;
+	border: 1px solid black;
+*/
+}
+
+input.ansInput{
+	font-size: 14px;
+	width: 44px;
+}
+
+#reset {
+	margin: 6px 2px 0 0;
+}
+
+#check {
+	margin: 6px 6px 0 0;
+}
+
+#steps, #next, #hint {
+	margin: 6px 6px 0 0;
+}
+
+#reviewResult {
+/*	height: 24px; */
+	margin-top: 9px;
+}
+
+#reviewCorrect {
+	color: green;
+}
+
+#reviewWrong {
+	color: #DB0000;
+}
+
+.stepIndex {
+	font-weight: bold;
+}
+
+/* ======= "teacher edition" - display multi answers for reviewers ======= */
+.teacherEdition, .teacherEditionEq {
+	color:gray;
+}
+.teacherEdition span:after {
+	content: '; '
+}
+.teacherEdition span:last-child:after {
+	content: ''
+}
+
+/* ======== Tables ======== */
+.taglist ul {
+	font: 22px Arial;
+	padding-right: 10px;
+	padding-left: 10px;
+}
+
+#Stage label {
+	cursor: pointer;
+}
+
+.taglist :checked + label {
+	color: #3939D4;
+/*    text-shadow: 0 0 5px #fff; */
+}
+
+table#vars td:nth-child(1) {
+	color: #431AD6;
+}
+
+#Stage input[type='checkbox'] {
+	cursor: pointer;
+}
+
+table tr:nth-child(even) {
+	background-color: #CCCCCC;
+}
+
+table tr:nth-child(odd) {
+	background-color: #DDDDDD;
+}
+
+table td {
+	padding:4px;
+	border:1px solid #AAF;
+}
+
+table input[type='text'] {
+	alignment-adjust: center;
+}
+
+table th {
+	padding: 2px 8px 2px 8px;
+	background:#89B5FA;
+	border:1px solid #000;
+	max-width: 100px;
+}
+
+table {
+	border-collapse:collapse;
+	margin: 10px 0 10px 10px;
+	border-width: 2px;
+	border-color: black;
+	border-style: ridge;
+	cursor: pointer;
+	color: black;
+}
+
+/* -------- Table column filters ----- */
+
+.filter {
+    background: #31DE6E;
+}
+
+tr:nth-child(even) td.filter {
+    background: #86d6a6;
+}
+tr:nth-child(odd) td.filter {
+    background: #a6d6b6;
+}
+
+th div {
+    position: relative;
+}
+
+th div ul {
+    position:absolute;
+    background:white;
+    list-style:none;
+    margin:0;
+    padding:0;
+    text-align:left;
+    font-size:10pt;
+    left:0px;
+    top:-10px;
+    opacity:.92;
+    border:1px solid black;
+    box-shadow:1px 1px 1px #666;
+    display:none;
+}
+th li {
+    padding:2px;
+    border-top:1px solid gray;
+    white-space: nowrap;
+    cursor:pointer;
+}
+th li:first-child {
+    border-top:none;
+    color:#999;
+}
+th li:hover {
+    background:LightBlue;
+}
+
+/* ======== Pop-ups (equivalence) ======== */
+#popup {
+	display: none;
+	background-color: white;
+	padding: 8px;
+	border: #4278F5 2px solid;
+/*    box-shadow: 6px 5px 8px #42A1F5; */
+    box-shadow: 0 0 16px #42A1F5;
+}
+
+#equivSave, #equivCancel {
+	font: 18px Arial;
+	margin-right: 6px;
+	float: right;
+}
+
+/* ======== General Container ======== */
+body {
+	background-color: #DEF6FA;	/*#B4CFFA; */
+}
+
+#Editor, #Stage {
+	margin-bottom: 20px;
+	border-style: solid;
+	border-color: black;
+	border-width: 0;
+}
+
+#Stage input {
+	-moz-user-select: text;
+	-webkit-user-select: text;
+	-khtml-user-select: text;
+}
+
+div, #Stage img {
+	color: black;
+	font: 16px Arial;
+}
+
+canvas.left {
+	width: 200px;
+	height: 200px;
+}
+
+.container {
+	pointer-events:none;	/* This doesn't work in IE or Opera! */
+}
+
+#errorBox {
+	position: relative;
+	width: auto;
+
+	padding: 10px;
+	font: 18px Arial;
+	background-color: white;
+	color: black;
+	border-style: solid;
+	border-color: #0076ab;
+	border-width: 1px;
+}
+
+/* ======== Login Page ======== */
+.loginForm {
+	margin-top: 20px;
+	background-color: #FFFCD6;
+	border: 1px solid black;
+	border-collapse:separate;
+	cursor: default;
+	max-width: 275px;	/* Slightly awkward method to force wrapping of error string */
+}
+
+table.loginForm tr{
+	background-color: #FFFCD6;
+}
+
+table.loginForm td{
+	border: none;
+}
+
+.loginInp {
+	width: 150px;
+}
+
+#loginBtn {
+	font: 18px Arial;
+}
+
+.loginInp textarea:focus, input[type='text']:focus {
+	background-color: white;
+}
+
+#failMessage {
+	color: red;
+	font: 16px Arial;
+	text-align: center;
+}
+
+/* ======== Top-level info page ======== */
+
+.titlePadding {
+	font-size: 0px;
+	margin-bottom: 15px;
+}
+
+.info {
+	font: 16px Arial;
+	margin-top: 10px;
+}
+
+.info th {
+	cursor: default;
+}
+
+.info td {
+	padding: 6px;
+}
+
+#addProblem {
+	margin-bottom: 6px;
+	font-size: 16px;
+}
+
+#queryFail {
+	color: red;
+	font: 16px Arial;
+	margin: 8px 0 0 12px;
+}
+
+#bulkOps {
+	margin-top: 20px;
+	padding: 6px;
+}
+
+#jumpBox {
+	margin-bottom: 20px;
+	padding: 10px;
+}
+
+#jumpBox, #bulkOps {
+	width: 290px;
+
+	background-color: #FFFCD6;
+	border: 1px solid black;
+	border-collapse:separate;
+
+	cursor: default;
+}
+
+#jumpBreak {
+	margin-top: 16px;
+	margin-bottom: 16px;
+}
+
+#jumpText {
+	font-weight: bold;
+}
+
+#jumpInput {
+	width: 60px;
+}
+
+#jumpButton {
+	margin-left: 15px;
+}
+
+#chapterText {
+	margin-top: 8px;
+}
+
+#bookSelect, #chapterSelect {
+	margin-left: 6px;
+}
+
+.queryBox {
+	background-color: #FFFCD6;
+	padding: 10px;
+	border: 1px solid black;
+	border-collapse:separate;
+	margin-bottom: 20px;
+}
+
+#objectQuery {
+	width: 500px;
+}
+
+#problemQuery {
+	width: 440px;
+}
+
+.queryHeader {
+	font: bold 18px Arial;
+	color: #2E6E9E;
+	margin-bottom: 12px;
+	background-color: #E6F1FC;
+	padding: 5px;
+	border: black 1px solid;
+
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+
+	background: #dfeffc url(redmond/images/ui-bg_glass_85_dfeffc_1x400.png) 50% 50% repeat-x;
+	font-weight: bold;
+	color: #2e6e9e;
+}
+
+/* ======== Save Page ======== */
+.message {
+	font: 18px Arial;
+}
+
+#changeList {
+	cursor: auto;
+}
+
+#changeList th {
+	max-width: none;
+}
+
+.livePad {
+	margin: 18px 0 0 0;
+}
+.savePad {
+	margin: 16px 0 10px 0;
+}
+.noChangePad {
+	margin: 30px 0 6px 0;
+}
+
+.validateButtons {
+	margin-right: 8px;
+}
+
+.validateBold {
+	margin-right: 8px;
+	font-weight: bold;
+}
+
+/* ======== Bottom bar ======== */
+
+#bottomBar {
+	overflow: hidden;
+	background-color: #FFD280;
+	padding: 6px;
+	border: 1px solid #4297d7;
+	margin-top: 20px;
+}
+
+.bottomLeft {
+	float: left;
+	font: 12px Arial;
+}
+
+.bottomRight {
+	float: right;
+	font: italic 12px Arial;
+	cursor: pointer;
+}
+
+/* ======== Loading overlay ======== */
+#dimmed {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+/*	opacity: 0.5;
+	background-color: black;
+*/
+	z-index: 99;
+}
+
+#loadAuto {
+	position: absolute;
+	z-index: 100;
+
+	background-color: #4297D7;
+	font: 20px Arial;
+	color: white;
+	padding: 20px;
+/*	border: ridge 2px blue; */
+	border: solid 1px black;
+	text-align: center;
+	width: 120px;
+	cursor: default;
+}
+
+/* ======== RichEdit Two-column Layout ======== */
+.reWrapper{
+   float: left;
+   width: 100%;
+}
+.reLeft{
+   float: left;
+   left: 0%;
+   padding-top: 2px;	/* Align with values */
+}
+.reRight{
+	float: left;
+}
+
+/* ======== Two-column Layout ======== */
+.wrapper{
+   float: left;
+   left: 0.00%;
+   width: 100.00%;
+   padding: 6px 2px;
+   border-bottom: 1px solid black;
+   margin-left: -4px;
+}
+.left{
+   float: left;
+   left: 0%;
+   width: 92.00%;
+   margin: 4px 0 0 4px;
+}
+.right{
+	float: right;
+	right: 0%;
+/*	width: 27.40%; */
+	width: 30px;
+}
+
+/* =========== History view ============= */
+.tableLink, .fakeLink {
+  color: blue;
+  border-bottom: 1px solid;
+  cursor: pointer;
+}
+
+.tableLink:hover, .fakeLink:hover {
+  color: purple;
+}
+
+#return {
+	margin-left: 8px;
+}
+
+/* =========== Filtered List ============= */
+.secondaryListContainer {
+	position: fixed;
+	top: 10%;
+	height: 80%;
+	width: 50%;
+
+	z-index: 201;
+	border: black 2px groove;
+	background-color: #B4CFFA;
+	padding: 4px 10px 4px 10px;
+}
+
+.positionAsSecondary {
+	left: 40%;
+}
+
+.positionAsPrimary {
+	left: 25%;
+}
+
+.listContainer {
+	position: fixed;
+	top: 10%;
+	height: 80%;
+	width: 50%;
+	left: 25%;
+
+	z-index: 101;
+	border: black 2px groove;
+	background-color: #B4CFFA;
+	padding: 4px 10px 4px 10px;
+}
+
+.listItems, .secondaryListItems {
+	border: black 1px solid;
+	overflow-y: scroll;
+	background-color: #DAEDF0;
+	height:85%;
+}
+
+.listHead {
+	padding-top:10px;
+	font-size: 11pt;
+	font-weight: bold;
+}
+
+.textList > li {
+    clear: both;
+}
+
+.tagList {
+    color: #0000FF;
+    display: block;
+    float: left;
+    width: 33%;
+}
+
+/*-------------------------------------*/
+#clearTags {
+	margin-top: 10px;
+}
+
+#tag-list {
+	border-width:0;
+	border-style:none;
+}
+table#tag-list tr {
+	background:transparent;
+}
+table#tag-list tbody:nth-of-type(n+2) tr:first-child td {
+	padding-top:30px;
+}
+#tag-list td {
+	font-weight: normal;
+	border: none;
+}
+#tag-list td.type-name {
+	font-weight: bold;
+}
+#tag-list tr {
+    vertical-align: top;
+}
+#tag-list td {
+    padding:3px;
+}
+
+#tag-list .tag-name {
+	padding-right: 10px;
+}
+
+div.ctrl {
+	position:relative;
+	width:19px;
+}
+.delete-tag {
+	position:absolute;
+	clip:rect(0,19px,19px,0);
+}
+.delete-tag:hover {
+	top:0;
+	left:-19px;
+	clip:rect(0,38px,19px,19px);
+}
+#tag-list td.objective-name {
+	font-weight:bold;
+	color:#3e6083;
+	padding-right: 10px;
+}
+#tag-list td.topic-name {
+	font-weight:bold;
+	color:#294b6e;
+}
+.topic-bg {
+    background: #47eba6;
+}
+.objective-bg {
+    background: #71f0bd;
+}
+.objective-bg2 {
+    background: #9cf6d5;
+}
+
+.topic-bg-alt {
+    background: #4798eb;
+}
+.objective-bg-alt {
+    background: #71b7f0;
+}
+.objective-bg-alt2 {
+    background: #9cd6f6;
+}
+
+.standards {
+	font-weight:normal;
+}
+.standards li {
+}
+/*-------------------------------------*/
+
+.tagListBg div{
+	background:#88f;
+}
+
+.tagListAltbg div{
+	background:#ccf;
+}
+
+.tagDivider {
+	padding-top:10px;
+}
+.topic {
+    color: #008000;
+    display: block;
+    float: left;
+    width: 33%;
+}
+
+.objective {
+    color: #800080;
+    display: block;
+    float: left;
+    width: 33%;
+}
+
+.filterClass {
+	border: black 2px groove;
+	padding: 2px;
+	margin: 4px;
+}
+
+.filterListTitle {
+	margin-left: 8px;
+	margin-right: 4px;
+}
+
+.entry {
+	list-style-type: none;
+	cursor: pointer;
+}
+
+.entry:hover {
+	background-color: #F8FF73;
+}
+
+#listOK, #listBack, #listCancel {
+	margin: 4px 4px 4px 0;
+}
+
+#inner-wbList, #secondaryList {
+	padding-left: 0;
+	margin: 6px;
+}
+
+/* ======== Object queries ======== */
+td.multi {
+	text-align: center;
+}
+
+table#objectList {
+	cursor: default;
+	margin-top: 6px;
+}
+
+#bulkOps {
+	margin-left: 15px;
+	width: 500px;
+}
+
+#bulkOps button {
+	margin-left: 20px;
+}
+
+/* cells that can be clicked to get Review History */
+table#objectList td:nth-child(n+3) {
+	cursor: pointer;
+}
+
+#skipToEnd {
+	margin-left: 14px;
+	font: 14px Arial;
+}
+
+/* ======== Image Overlays ======== */
+#overlay-add {
+	margin-top: 10px;
+}
+
+.image-overlay {
+	position:absolute;
+	top:0px;
+	left:0px;
+	padding:3px;
+	color:inherit;
+	font-size:inherit;
+	white-space: nowrap;
+	z-index:2;
+	font-weight: bold;
+}
+
+/*
+.image-overlay:hover {
+	background: gray;
+	border:1px solid black;
+}
+*/
+
+.image-overlay-stopped {
+	cursor:pointer;
+}
+.image-overlay-drag {
+	cursor:move;
+}
+.image-overlay-mouseover {
+	background: gray;
+	border:1px solid black;
+}
+
+.image-overlay-highlight {
+	border:1px solid red;
+	padding:2px;			/* Border + padding should be 3px to match non-highlight */
+	background:white;
+	z-index:100;
+}
+.imageToOverlay .overlay {
+	position:absolute;
+	top:0;
+	left:0;
+}
+#font-edit {
+	float:right;
+}
+#font-size, #font-color {
+	display:none;
+	text-transform:capitalize;
+}
+.overlay-row {
+	clear:left;
+}
+.overlay-row > * {
+	float:left;
+}
+.overlay-field {
+    cursor: pointer;
+    margin: 3px;
+    padding: 3px;
+	width:400px;
+}
+span.coords > input.value {
+	width:40px;
+	margin-right:0;
+}
+
+/* ======== Modal Dialogs ======== */
+.modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: black;
+	opacity: 0.5;
+	z-index: 100;
+}
+
+.dialog {
+	position: fixed;
+	z-index: 101;
+
+	border: ridge 8px #0D0873;
+	background-color: #EFF0DA;
+}
+
+.dialogTitle {
+	text-align: center;
+	background-color: #F8FF73;
+
+	margin: 0 0 6px 0;
+	padding: 6px;
+	border-bottom: solid 1px black;
+}
+
+.dialogText {
+	padding: 0 20px 6px 20px;
+}
+
+.dialogButton {
+	float: right;
+	margin: 10px 8px 8px 0;
+}
+
+.dialogInput {
+	width: 200px;
+	margin: 0 20px 0 20px;
+}
+
+/* ======== Change list ======== */
+#toggleDiff {
+	margin: 0 10px 10px 0;
+	font-weight: bold;
+}
+
+#revertAll {
+	font-weight: bold;
+}
+
+select#revList {
+	font: bold 16px Arial;
+	background-color: #B4CFFA;
+	border-color: black;
+}
+
+table#diffTable {
+	margin: auto;		/* override */
+	cursor: default;	/* override */
+
+	width: 100%;
+}
+
+tr.diffRow>td {
+	border: 1px solid #0E00AD;	/* border-right looks the best, but we need a clear divider in "Show Differences Only mode" */
+	vertical-align: middle;
+}
+
+tr.diffRow>td:first-child, tr.diffRow>td:last-child {
+	vertical-align: top;
+	padding-top: 8px;
+	padding-bottom: 10px;
+}
+
+th.diffTable {
+	max-width: none;	/* override */
+
+	width: 50%;
+}
+
+tr.isDifferent>td {
+	background-color: #E0B4B7;
+}
+/* -- odd/even doesn't work -- we're operating with hidden rows
+tr.isDifferent:nth-child(even) {
+	background-color: #E3989D;
+}
+
+tr.isDifferent:nth-child(odd) {
+	background-color: #E0B4B7;
+}
+*/
+
+.diffChange {
+    text-shadow: 0 0 3px black;
+	color: #fff;
+/*	color: #6000A1; */
+	text-decoration: underline;
+	float: right;
+	margin-left: 10px;
+	cursor: pointer;
+}
+
+.diffChange:hover {
+    text-shadow: 0 0 5px red;
+}
+
+.diffChange.disabled {
+	color: darkgray;
+	text-shadow: none;
+}
+
+#diffTable .value, #diffTable .header, #diffTable table {
+	cursor: default;
+}
+
+.diffArrow {
+	cursor: pointer;
+	padding-top: 4px;
+}
+
+/* ======== Status colors in queries ======== */
+.statusNew {}
+.unreviewed {}
+.needsContent {}
+.needsVTP {}
+.authorComplete {}
+.unmodified {}
+.passed1x {background-color: #DDFFDD}
+.passed2x {background-color: #DDFFDD}
+.passed3x {background-color: #DDFFDD}
+.failedReview {background-color: #FFDDDD}
+
+/* ======== Block colors ======== */
+#Category {
+/*	background-color: #B4DBFA;	*/		/* Less subtle: B4E2FA */
+}
+
+#Step {
+/*	background-color: #BEEBD9; */
+}
+
+#AnswerType, #Answer, #Equivalence {
+	background-color: #B4DBFA;
+}
+
+#ChapterID, #Whiteboard {
+	background-color: #B4DBFA;
+}
+
+#Prefix, #Question {
+/*	background-color: #A2F2FA; */
+}
+
+#Constraint, #QVars {
+/*	background-color: #B4DBFA; */
+}
+
+#tabVariables #Question, #tabSteps #Question, #tabTags #Question {
+	background-color: #CCCCCC;
+	border-top: solid 1px black;
+}
+
+#tabVariables #Answer, #tabSteps #Answer {
+	background-color: #CCCCCC;
+}
+
+#tabVTP_Steps #Step {
+	background-color: #B4DBFA;
+}
+
+.textList {
+	font: 14px arial;
+    list-style: none outside none;
+    padding-left: 0;
+}
+
+/* ======== CKEditor Styles ======== */
+outside {
+	background-color: #CFEFFF;
+}
+.no-print {
+	color: green;
+}
