@@ -60,6 +60,14 @@
 	);
 
 	//=======================================================
+	// Table: headClass, header, id, data, tableClass
+	//=======================================================
+	app.templates.tableDragDrop = _.template(
+		'<div><span class="header <%= headClass %>"><%= header %>:</span></div>' +
+		'<% print(fw.makeTable(id, data, tableClass)); %>'
+	);
+
+	//=======================================================
 	// Simple Input
 	//=======================================================
 	app.templates.simpleInput = _.template(

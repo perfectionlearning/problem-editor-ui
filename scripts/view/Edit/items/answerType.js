@@ -15,6 +15,7 @@
 			VTPGraph: {text: 'Graph Plot', note: 'User plots points on a graph'},
 			graphConst: {text: 'Graph Constant', note: 'User enters constants to match the displayed graph'},
 			multiPart: {text: "Multi-part", note: "A question divided into multiple parts", disableInSteps: true},
+			dragDrop: {text: 'Drag-and-Drop', note: 'Drag-and-drop hot text'},
 
 			"no input": {text: 'No Input', note: 'Pencil and paper input'}
 		},

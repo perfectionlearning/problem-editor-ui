@@ -175,6 +175,7 @@
 			VTPGraph: answerGraph,
 			graphConst: answerGraph,
 			multiPart: answerMultiPart,
+			dragDrop: answerDragDrop,
 			"no input": answerPaper
 		}
 
@@ -331,6 +332,31 @@
 		{
 			var sel = parseInt(all[i]);
 			if (isNaN(sel) || sel < 0 || sel >= choices.length)
+				return "One of the answers is invalid.  It doesn't match any of the choices.";
+		}
+	}
+
+	//=======================================================
+	// Drag and Drop
+	// Choices: 
+	//=======================================================
+	function answerDragDrop(model)
+	{
+		var choices = model.get('choices');
+		var res = choicesCommon(choices);
+		if (res) return res;
+
+		var a = model.get('a');
+		var all = a.split(',');
+
+		// Specifically allow no answer (none of the above)
+		if ((all.length === 1) && all[0] === '')
+			return;
+console.log('validate answerDragDrop choices, all', choices, all);
+		for (var i = 0; i < all.length; i++)
+		{
+			var sel = parseInt(all[i]);
+			if (isNaN(sel) || sel < 0 || sel >= choices.length*2)
 				return "One of the answers is invalid.  It doesn't match any of the choices.";
 		}
 	}

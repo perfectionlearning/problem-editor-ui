@@ -17,6 +17,7 @@
 			VTPGraph: 'GraphConfigView',	// Hide (combined graphparams, graphequations)
 			graphConst: 'GraphConfigView',	// Hide (combined graphparams, graphequations)
 			multiPart: 'MultiPartView',		// Hide (No answer at all)
+			dragDrop: 'DragDropInputView',
 
 			"no input": 'AnswerEditView'
 		},

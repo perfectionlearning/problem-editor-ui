@@ -102,7 +102,7 @@ function navAwayHandler(e)
 //=======================================================
 $(function() {
 	// Install global exception handler
-	window.onerror = app.exception;
+//	window.onerror = app.exception;
 	window.onbeforeunload = navAwayHandler;
 
 	// Allow CORS

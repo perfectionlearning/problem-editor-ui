@@ -142,6 +142,9 @@
 			wb: '',
 			equiv: '',
 			graphequations: [],	// This needs to be sent, or the server kersplodes
+			orderMatters: false,
+			partialCorrectAllowed: false,
+			presentationData: {},
 			tags: []
 		}
 	});
@@ -210,7 +213,12 @@
 		parse: function(response) {
 			if (response === undefined || (isArray(response) && response.length === 0))
 				return;
-
+console.log('Problem model parse', response);
+if (response.ansType === 'dragDrop') {
+    response.presentation_data = JSON.parse(response.skill);
+    response.skill = '';
+console.log('parsed presentation data', response.presentation_data);
+}
 			var out = cleanModel(response);
 
 			// Deal with embedded collection
