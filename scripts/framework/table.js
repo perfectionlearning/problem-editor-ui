@@ -37,7 +37,6 @@
 	{
         var cellData;
 		// Turn this into an object!
-
 		var data = argObj.data;
 
 		if (!argObj.obj.noSanitize)

@@ -168,14 +168,18 @@
 						noSanitize: true
 					},
 					dataEquations: {
-						columns: ['richEdit', this.type, 'text', 'flex'],
+						columns: ['richEdit', 'numinput', this.type, 'flex'],
+						inpWidth: 10,
 						headers: this.colHeadersB,
-						inpWidth: 50,
 						data: data.partB,
 						noSanitize: true
 					}
 				}));
-				fw.tableSetChecked(this.$el, makeIntList(this.model.get(that.field)));
+				var field = this.model.get(that.field);
+				answer = this.JSONTemplate.a;
+				presentation_data = this.JSONTemplate.presentation_data;
+//				fw.tableSetChecked(this.$el, makeIntList(answer, presentation_data));
+				fw.tableSetChecked(this.$el, data.checked);
 
 				// This should probably be done elsewhere.
 				this.$('#multi' + app.ctr + 'Add').btnAddRow({preAddCallBack: that.closeEditor}, that.changed);
@@ -198,7 +202,8 @@
 						noSanitize: true
 					},
 					dataEquations: {
-						columns: ['raw', 'raw', 'showCheck'],
+						columns: ['raw', 'numinput', 'showCheck'],
+						inpWidth: 10,
 						headers: this.colHeadersB,
 						data: data.partB,
 						noSanitize: true
@@ -219,29 +224,12 @@
 		//---------------------------------------
 		valueFromModel: function(model) {
 			var presentation_data = (model && model.get('presentation_data') || {});
-			presentation_data = this.JSONTemplate.presentation_data;
-			var answer_val_map = presentation_data.answer_val_map || [];
-			var interactive_frames = presentation_data.interactive_frames;
-			var opts = interactive_frames[0];
-			var partA = interactive_frames[1];
-			var partB = interactive_frames[2];
-			var contents = {
-				opts: opts.contents,
-				partA: partA.contents,
-				partB: partB.contents
-			};
-
-			if (!answer_val_map || answer_val_map.length < 1)
-				answer_val_map = [''];
-
 			var answers = (model && model.get(this.field)) || '';
+			presentation_data = this.JSONTemplate.presentation_data;
 			var a = this.JSONTemplate.a;
-			var answers = a.split(',').map((elem) => { return parseInt(elem, 10); });
-			var out = {
-				partA: makePartAList(answer_val_map, contents.partA, answers),
-				partB: makePartBList(answer_val_map, contents.opts, contents.partB, answers)
-			};
-console.log('valueFromModel out', out);
+			answers = a.split(',').map((elem) => { return parseInt(elem, 10); });
+			var out = parsePresentationData(a, presentation_data);
+
 			return out;
 		},
 
@@ -250,23 +238,19 @@ console.log('valueFromModel out', out);
 		//---------------------------------------
 		valueToModel: function(value) {
 			var choices = [];
-			var answers = '';
+			var a = [];
+			var order = [];
 			$.each(value, function(idx, val) {
 				choices.push(val[0]);
-				if (val[1])
-				{
-					if (answers.length > 0)
-						answers += ',';
-					answers += 2*idx;
+				if (val[1]) {
+					order.push(val[1]);
 				}
-				if (val[2])
-				{
-					if (answers.length > 0)
-						answers += ',';
-					answers += 2*idx+1;
+				if (val[2]) {
+					a.push(idx);
 				}
 			});
-
+			var answers = a.join(',');
+console.log('valueToModel choices, answers, order', choices, answers, order);
 			return [choices, answers];
 		},
 
@@ -277,6 +261,8 @@ console.log('valueFromModel out', out);
 		value: function() {
 			var choices = this.$('.editme>div');
 			var answers = this.$('.multi>input');
+			var orders = this.$('.text-input>input');
+			var offset = choices.length - orders.length;
 
 			var regex = /(<.+?)'(.*?)'(.*?>)/g;	// Convert all " to ' in the html for proper comparison
 
@@ -285,15 +271,13 @@ console.log('valueFromModel out', out);
 			{
 				var entry = app.removeMathJax(choices[i].innerHTML);
 				entry = app.restoreMathML(entry);
-				entry = entry.replace(regex, '$1"$2"$3');	// @FIXME/dg: This is inadequate! It doesn't work! Only the first item in quotes is fixed.
-
 				if (entry === '&nbsp;' || entry === ' ' || entry === '\u00A0')
 					entry = '';
 
-				var col1 = answers[2*i].checked;
-				var col2 = answers[2*i+1].checked;
+				var checked = answers[i].checked;
+				var order = i >= offset ? orders[i-offset].value : null;
 
-				data.push([entry, col1, col2])
+				data.push([entry, order, checked])
 			}
 
 			return data;
@@ -315,7 +299,7 @@ console.log('valueFromModel out', out);
 			// Split data into choice and answer sections
 			var out = this.valueToModel(data);
 			var presentationData = this.buildPresentationData();
-
+console.log('setData out', out);
 			// Update model
 			this.model.set({
 				'order_matters': true,
@@ -379,6 +363,7 @@ console.log('valueFromModel out', out);
 
 			// Get the current value of the control
 			var val = this.value();
+console.log('changed: ', val);
 			// Store it to the model
 			this.setData(val);
 
@@ -417,7 +402,18 @@ console.log('valueFromModel out', out);
 				return;
 
 			var idx = this.$('.editme').index(ev.currentTarget);	// This MUST go before closeEditor! ev.currentTarget will soon be obsolete.
-			var data = this.valueFromModel(this.model)[idx][0];		// Use valueFromModel rather than directly doing model.get. valueFromModel has safety code for missing data.
+console.log('editChoice idx', idx);
+//			var data = this.valueFromModel(this.model)[idx][0];		// Use valueFromModel rather than directly doing model.get. valueFromModel has safety code for missing data.
+			var data = this.valueFromModel(this.model);
+			var partA = data.partA;
+			var partB = data.partB;
+			if (idx < data.partA.length) {
+				var row = data.partA[idx];
+			}
+			else {
+				var row = data.partB[idx - data.partA.length];
+			}
+			var value = row[0];
 
 			// Close any existing editors -- This may cause a change event, which causes render(), which causes ev.currentTarget to be invalid!
 			this.closeEditor();
@@ -426,8 +422,9 @@ console.log('valueFromModel out', out);
 			target = this.$('.editme')[idx];	// Find the correct <td>
 			target = $(target).children();		// Get the children, like we did intitially
 
+console.log('editChoice data', data);
 			// Convert <div> to <textarea> for editing. This should be hidden away somewhere else!
-			target.replaceWith(app.templates.choiceEditor({value: data}));
+			target.replaceWith(app.templates.choiceEditor({value: value}));
 
 			// Update the target yet again. It's different now. We could cache it, but it's a child of the template, not the template itself.
 			target = this.$('.richEdit');
@@ -583,5 +580,89 @@ console.log('valueFromModel out', out);
 		return out;
 	}
 
+
+	//=======================================================
+	// Converts an answer string ("1,5,2") to a sorted array of ints ([1,2,5])
+	//=======================================================
+	function makeIntList(answer, presentation_data)
+	{
+		var partA = presentation_data.interactive_frames[0];
+		var partB = presentation_data.interactive_frames[2];
+		var contentsA = partA.contents;
+		var contentsB = partB.contents;
+
+		var a = answer.split(',').map((item) => { return parseInt(item, 10); });
+		var answersB = [];
+		a.forEach((item) => {
+			if (contentsA.indexOf(item) !== -1) { answersB.push(item); }
+		});
+		if (!answer)
+			return [];
+
+		var out = [3];
+
+		contentsB.forEach((obj, ndx) => {
+			if (obj.shape === 'circ') {
+				out.push(answersB[ndx]);
+			}
+		});
+console.log('makeIntList out', out);
+		return out;
+	}
+
+	//=======================================================
+	//=======================================================
+	function parsePresentationData(answersStr, presentation_data) {
+		answers = answersStr.split(',').map((a) => { return parseInt(a, 10); });
+		var answer_val_map = presentation_data.answer_val_map;
+		var interactive_frames = presentation_data.interactive_frames;
+		var opts = interactive_frames[2];
+		var partA = interactive_frames[1];
+		var partB = interactive_frames[0];
+		var contentsA = partA.contents;
+		var contentsB = partB.contents;
+		var contentsOpts = opts.contents;
+		var lengthA = contentsA.length;
+
+		var answersA = [];
+		var answersB = [];		
+		var checked = [];
+		var listA = [];
+		var listB = [];
+
+		var aItems = 0;
+		answers.forEach((ndx, aNdx) => {
+			if (ndx < lengthA) {
+				aItems++;
+				checked.push(ndx);
+			}
+			else {
+				var contentsOptsNdx = aNdx - aItems;
+				if (contentsOpts[contentsOptsNdx].shape === 'circ') {
+					checked.push(ndx);
+				}
+			}
+		});
+
+		contentsA.forEach((ndx) => {
+			var checked = (answers.indexOf(ndx) !== -1) ? 1 : 0;
+			listA.push([answer_val_map[ndx], checked]);
+		});
+		
+		contentsB.forEach((ndx) => {
+			var order = answers.indexOf(ndx);
+			var isOp = false;
+			if (order === -1) { order = null; }
+			else { isOp = (contentsOpts[order-1].shape === 'circ'); }
+			listB.push([answer_val_map[ndx], order, isOp]);
+		});
+
+		var out = {
+			checked: checked,
+			partA: listA,
+			partB: listB
+		};
+		return out;
+	}
 
 })();

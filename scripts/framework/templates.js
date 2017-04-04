@@ -43,7 +43,7 @@
 	// tableInput (from table.js): data, width
 	//=======================================================
     fw.templates.tableInput = _.template(
-        '<td><input type="text" <%= width %> value="<%= data %>"/></td>'
+        '<td class="text-input"><input type="text" <%= width %> value="<%= data %>"/></td>'
 	);
 
 	//=======================================================
