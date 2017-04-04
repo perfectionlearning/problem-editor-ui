@@ -64,7 +64,8 @@
 	//=======================================================
 	app.templates.tableDragDrop = _.template(
 		'<div><span class="header <%= headClass %>"><%= header %>:</span></div>' +
-		'<% print(fw.makeTable(id, data, tableClass)); %>'
+		'<% print(fw.makeTable(id, dataVariables, tableClass)); %>' +
+		'<% print(fw.makeTable(id, dataEquations, tableClass)); %>'
 	);
 
 	//=======================================================

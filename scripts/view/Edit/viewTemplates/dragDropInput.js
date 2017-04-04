@@ -10,11 +10,30 @@
 		compare: app.objectCompare,
 		field: 'a',
 
-		colHeaders: ['Variables', 'Part A Variable Choices', 'Part B Variable Choices'],
+		colHeadersA: ['Part  A Variables', 'Is Correct'],
+		colHeadersB: ['Part  B Variables', 'Sequence', 'Is Operator'],
 
 		JSONTemplate: {
+			a: "3,9,12,7,16,10",
 			presentation_data: {
 				answer_val_map: {
+					"0": "x = day of the week",
+					"1": "x = weekly expenses",
+					"2": "x = weekly income",
+					"3": "x = number of weeks",
+					"4": "1,000",
+					"5": "3,200",
+					"6": "4,500",
+					"7": "10,000",
+					"8": "1,000x",
+					"9": "3,200x",
+					"10": "4,500x",
+					"11": "10,000x",
+					"12": "+",
+					"13": "-",
+					"14": "*",
+					"15": "\/",
+					"16": "="
 				},
 				interactive_frames: [
 					{
@@ -22,7 +41,7 @@
 						title_display: null,
 						orientation: 'left',
 						style: 'vertical_content_box',
-						contents: [],
+						contents: [4,5,6,7,8,9,10,11,12,13,14,15,16],
 						interaction_method: 'drag-elements',
 						content_display_columns: 1,
 						content_display_rows: 13,
@@ -34,7 +53,7 @@
 						title_display: 'h3, bold, left-top',
 						orientation: 'right-top',
 						style: 'standard_content_box',
-						contents: [],
+						contents: [0,1,2,3],
 						interaction_method: 'select-elements-single',
 						content_display_columns: 2,
 						content_display_rows: 2,
@@ -53,7 +72,13 @@
 						title_display: 'h3, bold, left-top',
 						orientation: 'right-top',
 						style: 'standard_drop_box',
-						contents: [],
+						contents: [
+							{"id": 0, "shape": "rect", "line": "dotted"},
+							{"id": 1, "shape": "circ", "line": "dotted"},
+							{"id": 2, "shape": "rect", "line": "dotted"},
+							{"id": 3, "shape": "circ", "line": "dotted"},
+							{"id": 4, "shape": "rect", "line": "dotted"}
+						],
 						interaction_method: 'drag-drop-elements',
 						external_drop_in: true,
 						content_display_columns: 5,
@@ -62,9 +87,29 @@
 						sends_answer: false,
 						answer_modes: [
 							{
-								answer_slot: 0,
-								source: 'selection',
-								order: 0
+								"answer_slot": 1,
+								"source": "contents.id.0",
+								"order": 0
+							},
+							{
+								"answer_slot": 2,
+								"source": "contents.id.1",
+								"order": 1
+							},
+							{
+								"answer_slot": 3,
+								"source": "contents.id.2",
+								"order": 2
+							},
+							{
+								"answer_slot": 4,
+								"source": "contents.id.3",
+								"order": 3
+							},
+							{
+								"answer_slot": 5,
+								"source": "contents.id.4",
+								"order": 4
 							}
 						]
 					},
@@ -110,16 +155,23 @@
 			if (this.options.edit)
 			{
 				// Create a table, then convert it to a flex table
-				this.$el.html(app.templates.table({
+				this.$el.html(app.templates.tableDragDrop({
 					header: this.header,
 					id: 'multi' + app.ctr,
 					headClass: 'stopEdit',
 					tableClass: '',
-					data: {
-						columns: ['richEdit', this.type, this.type, 'flex'],
-						headers: this.colHeaders,
+					dataVariables: {
+						columns: ['richEdit', this.type, 'flex'],
+						headers: this.colHeadersA,
 						inpWidth: 50,
-						data: data,
+						data: data.partA,
+						noSanitize: true
+					},
+					dataEquations: {
+						columns: ['richEdit', this.type, 'text', 'flex'],
+						headers: this.colHeadersB,
+						inpWidth: 50,
+						data: data.partB,
 						noSanitize: true
 					}
 				}));
@@ -134,16 +186,21 @@
 			else
 			{
 				// Read-only table view
-console.log('drag and drop render data', data);
 				this.$el.html(app.templates.tableDragDrop({
 					header: this.header,
 					id: 'multi' + app.ctr++,
 					headClass: 'startEdit',
 					tableClass: 'startEdit',
-					data: {
-						columns: ['raw', 'showCheck', 'showCheck'],
-						headers: this.colHeaders,
-						data: data,
+					dataVariables: {
+						columns: ['raw', 'showCheck'],
+						headers: this.colHeadersA,
+						data: data.partA,
+						noSanitize: true
+					},
+					dataEquations: {
+						columns: ['raw', 'raw', 'showCheck'],
+						headers: this.colHeadersB,
+						data: data.partB,
 						noSanitize: true
 					},
 					message: 'Hi, there!'
@@ -162,12 +219,30 @@ console.log('drag and drop render data', data);
 		//---------------------------------------
 		valueFromModel: function(model) {
 			var presentation_data = (model && model.get('presentation_data') || {});
-			var rows = presentation_data.answer_val_map || [];
-			if (!rows || rows.length < 1)
-				rows = [''];
+			presentation_data = this.JSONTemplate.presentation_data;
+			var answer_val_map = presentation_data.answer_val_map || [];
+			var interactive_frames = presentation_data.interactive_frames;
+			var opts = interactive_frames[0];
+			var partA = interactive_frames[1];
+			var partB = interactive_frames[2];
+			var contents = {
+				opts: opts.contents,
+				partA: partA.contents,
+				partB: partB.contents
+			};
+
+			if (!answer_val_map || answer_val_map.length < 1)
+				answer_val_map = [''];
 
 			var answers = (model && model.get(this.field)) || '';
-			return makeList(rows, answers);
+			var a = this.JSONTemplate.a;
+			var answers = a.split(',').map((elem) => { return parseInt(elem, 10); });
+			var out = {
+				partA: makePartAList(answer_val_map, contents.partA, answers),
+				partB: makePartBList(answer_val_map, contents.opts, contents.partB, answers)
+			};
+console.log('valueFromModel out', out);
+			return out;
 		},
 
 		//---------------------------------------
@@ -478,35 +553,35 @@ console.log('drag and drop render data', data);
 	//=======================================================
 	// Create data for the read-only version of the choice list
 	//=======================================================
-	function makeList(rows, answers)
+	function makePartAList(answer_val_map, part, answers)
 	{
 		var out = [];
-		var ansList = makeIntList(answers);
 
-		for (var i = 0; i < rows.length; i++) {
-			var col1 = ansList.indexOf(2*i) !== -1;
-			var col2 = ansList.indexOf(2*i+1) !== -1;
-			out.push([rows[i], col1, col2]);
-		}
+		part.forEach((ndx) => {
+			var checked = (answers.indexOf(ndx) !== -1) ? 1 : 0;
+			out.push([answer_val_map[ndx], checked]);
+		});
 
 		return out;
 	}
 
 	//=======================================================
-	// Converts an answer string ("1,5,2") to a sorted array of ints ([1,2,5])
+	// Create data for the read-only version of the choice list
 	//=======================================================
-	function makeIntList(str)
+	function makePartBList(answer_val_map, part, opts, answers)
 	{
-		if (!str)
-			return [];
-
 		var out = [];
 
-		$.each(str.split(','), function(idx, val) {
-			out.push(parseFloat(val));
+		part.forEach((ndx) => {
+			var order = answers.indexOf(ndx);
+			var isOp = false;
+			if (order === -1) { order = null; }
+			else { isOp = (opts[order-1].shape === 'circ'); }
+			out.push([answer_val_map[ndx], order, isOp]);
 		});
 
-		return out.sort();
+		return out;
 	}
+
 
 })();
