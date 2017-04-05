@@ -150,8 +150,8 @@
 		render: function() {
 			var that = this;
 			var data = this.valueFromModel(this.model);
+console.log('render: data', data);
 			this.prettifyChoices(data);
-
 			if (this.options.edit)
 			{
 				// Create a table, then convert it to a flex table
@@ -229,7 +229,6 @@
 			var a = this.JSONTemplate.a;
 			answers = a.split(',').map((elem) => { return parseInt(elem, 10); });
 			var out = parsePresentationData(a, presentation_data);
-
 			return out;
 		},
 
@@ -237,20 +236,36 @@
 		// Convert from internal format to model format
 		//---------------------------------------
 		valueToModel: function(value) {
+console.log('valueToModel value', value);
 			var choices = [];
 			var a = [];
 			var order = [];
+			var partA = [];
+			var partB = [];
+			var options = [];
+			var answers_val_map = [];
 			$.each(value, function(idx, val) {
 				choices.push(val[0]);
-				if (val[1]) {
-					order.push(val[1]);
+				answers_val_map.push(val[0]);
+				if (val[1] === null) {
+					partA.push(idx);
 				}
-				if (val[2]) {
+				else {
+					options.push(idx);
+				}
+				if (val[1]) {
+					partB.push(
+						{
+							shape: (val[2] ? 'circ' : 'rect')
+						}
+					);
+				}
+				if (val[1] === null && val[2] || val[1]) {
 					a.push(idx);
 				}
 			});
 			var answers = a.join(',');
-console.log('valueToModel choices, answers, order', choices, answers, order);
+console.log('valueToModel partA, partB, answers_val_map', partA, partB, answers_val_map);
 			return [choices, answers];
 		},
 
@@ -298,7 +313,9 @@ console.log('valueToModel choices, answers, order', choices, answers, order);
 		setData: function(data) {
 			// Split data into choice and answer sections
 			var out = this.valueToModel(data);
-			var presentationData = this.buildPresentationData();
+//			var presentationData = this.buildPresentationData();
+			this.presentation_data = this.JSONTemplate.presentation_data;
+			var presentationData = valueToPresentationData(this.value(), this.presentation_data);
 console.log('setData out', out);
 			// Update model
 			this.model.set({
@@ -315,6 +332,7 @@ console.log('setData out', out);
 		buildPresentationData: function() {
 			var pd = this.JSONTemplate.presentation_data;
 			var val = this.value();
+console.log('buildPresentationData val', val);
 			var answers = val.map((row) => { 
 				return row[0];
 			});
@@ -663,6 +681,41 @@ console.log('makeIntList out', out);
 			partB: listB
 		};
 		return out;
+	}
+
+	//=======================================================
+	//=======================================================
+	function valueToPresentationData(value, presentation_data) {
+		var choices = [];
+		var a = [];
+		var order = [];
+		var partA = [];
+		var partB = presentation_data.interactive_frames[2].contents;;
+		var options = [];
+		var answer_val_map = [];
+		$.each(value, function(idx, val) {
+			choices.push(val[0]);
+			answer_val_map.push(val[0]);
+			if (val[1] === null) {
+				partA.push(idx);
+			}
+			else {
+				options.push(idx);
+			}
+			if (val[1]) {
+				partB[0].shape = val[2] ? 'circ' : 'rect';
+			}
+			if (val[1] === null && val[2] || val[1]) {
+				a.push(idx);
+			}
+		});
+
+		presentation_data.answer_val_map = answer_val_map;
+		presentation_data.interactive_frames[0].contents = options;
+		presentation_data.interactive_frames[1].contents = partA;
+		presentation_data.interactive_frames[2].contents = partB;
+console.log('rebuild presentation_data', presentation_data);
+		return presentation_data;
 	}
 
 })();
