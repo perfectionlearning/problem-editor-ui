@@ -150,7 +150,6 @@
 		render: function() {
 			var that = this;
 			var data = this.valueFromModel(this.model);
-console.log('render: data', data);
 			this.prettifyChoices(data);
 			if (this.options.edit)
 			{
@@ -176,11 +175,7 @@ console.log('render: data', data);
 					}
 				}));
 				var field = this.model.get(that.field);
-				answer = this.JSONTemplate.a;
-				presentation_data = this.JSONTemplate.presentation_data;
-//				fw.tableSetChecked(this.$el, makeIntList(answer, presentation_data));
 				fw.tableSetChecked(this.$el, data.checked);
-
 				// This should probably be done elsewhere.
 				this.$('#multi' + app.ctr + 'Add').btnAddRow({preAddCallBack: that.closeEditor}, that.changed);
 				this.$('.multi' + app.ctr + 'Del').btnDelRow({preDelCallBack: that.closeEditor}, that.changed);
@@ -223,12 +218,15 @@ console.log('render: data', data);
 		// because this item combines two different model fields.
 		//---------------------------------------
 		valueFromModel: function(model) {
-			var presentation_data = (model && model.get('presentation_data') || {});
-			var answers = (model && model.get(this.field)) || '';
-			presentation_data = this.JSONTemplate.presentation_data;
-			var a = this.JSONTemplate.a;
-			answers = a.split(',').map((elem) => { return parseInt(elem, 10); });
-			var out = parsePresentationData(a, presentation_data);
+			if (!model) model = this.model;
+			if (model && model.get('end_of_course')) {
+				var end_of_course = model.get('end_of_course')[0];
+				var presentation_data = end_of_course.presentation_data || '{}';
+
+				presentation_data = JSON.parse(presentation_data);
+				var answers = (model && model.get(this.field)) || '';
+			}
+			var out = parsePresentationData(answers, presentation_data);
 			return out;
 		},
 
@@ -236,9 +234,9 @@ console.log('render: data', data);
 		// Convert from internal format to model format
 		//---------------------------------------
 		valueToModel: function(value) {
-console.log('valueToModel value', value);
 			var choices = [];
-			var a = [];
+			var partAans = [];
+			var partBans = [];
 			var order = [];
 			var partA = [];
 			var partB = [];
@@ -260,12 +258,18 @@ console.log('valueToModel value', value);
 						}
 					);
 				}
-				if (val[1] === null && val[2] || val[1]) {
-					a.push(idx);
+				if ((val[1] === null) && val[2]) {
+					partAans.push(idx);
+				}
+				if (val[1]) {
+					var tmpNdx = val[1] - 1;
+					partBans[tmpNdx] = idx;
 				}
 			});
+			var a = partAans.concat(partBans);
 			var answers = a.join(',');
-console.log('valueToModel partA, partB, answers_val_map', partA, partB, answers_val_map);
+
+//			this.model.set( { end_of_course: end_of_course } );
 			return [choices, answers];
 		},
 
@@ -313,39 +317,13 @@ console.log('valueToModel partA, partB, answers_val_map', partA, partB, answers_
 		setData: function(data) {
 			// Split data into choice and answer sections
 			var out = this.valueToModel(data);
-//			var presentationData = this.buildPresentationData();
-			this.presentation_data = this.JSONTemplate.presentation_data;
-			var presentationData = valueToPresentationData(this.value(), this.presentation_data);
-console.log('setData out', out);
+			var end_of_course = valueToEndOfCourse(data, this.model.get('end_of_course'));
 			// Update model
 			this.model.set({
-				'order_matters': true,
-				'partial_correct': true,
-				'presentation_data': presentationData,
+				end_of_course: end_of_course,
 				choices: out[0],
 				a: out[1]
 			});
-		},
-
-		//---------------------------------------
-		//---------------------------------------
-		buildPresentationData: function() {
-			var pd = this.JSONTemplate.presentation_data;
-			var val = this.value();
-console.log('buildPresentationData val', val);
-			var answers = val.map((row) => { 
-				return row[0];
-			});
-			var options = val.map((row) => { 
-				return row[1];
-			});
-			var variable_choices = val.map((row) => { 
-				return row[2];
-			});
-			pd.answer_val_map = answers;
-			pd.interactive_frames[0].contents = options;
-			pd.interactive_frames[1].contents = variable_choices;
-			return pd;
 		},
 
 		//---------------------------------------
@@ -381,7 +359,7 @@ console.log('buildPresentationData val', val);
 
 			// Get the current value of the control
 			var val = this.value();
-console.log('changed: ', val);
+
 			// Store it to the model
 			this.setData(val);
 
@@ -420,8 +398,6 @@ console.log('changed: ', val);
 				return;
 
 			var idx = this.$('.editme').index(ev.currentTarget);	// This MUST go before closeEditor! ev.currentTarget will soon be obsolete.
-console.log('editChoice idx', idx);
-//			var data = this.valueFromModel(this.model)[idx][0];		// Use valueFromModel rather than directly doing model.get. valueFromModel has safety code for missing data.
 			var data = this.valueFromModel(this.model);
 			var partA = data.partA;
 			var partB = data.partB;
@@ -440,7 +416,6 @@ console.log('editChoice idx', idx);
 			target = this.$('.editme')[idx];	// Find the correct <td>
 			target = $(target).children();		// Get the children, like we did intitially
 
-console.log('editChoice data', data);
 			// Convert <div> to <textarea> for editing. This should be hidden away somewhere else!
 			target.replaceWith(app.templates.choiceEditor({value: value}));
 
@@ -624,7 +599,6 @@ console.log('editChoice data', data);
 				out.push(answersB[ndx]);
 			}
 		});
-console.log('makeIntList out', out);
 		return out;
 	}
 
@@ -649,6 +623,7 @@ console.log('makeIntList out', out);
 		var listB = [];
 
 		var aItems = 0;
+
 		answers.forEach((ndx, aNdx) => {
 			if (ndx < lengthA) {
 				aItems++;
@@ -666,13 +641,15 @@ console.log('makeIntList out', out);
 			var checked = (answers.indexOf(ndx) !== -1) ? 1 : 0;
 			listA.push([answer_val_map[ndx], checked]);
 		});
-		
+
 		contentsB.forEach((ndx) => {
 			var order = answers.indexOf(ndx);
 			var isOp = false;
-			if (order === -1) { order = null; }
-			else { isOp = (contentsOpts[order-1].shape === 'circ'); }
-			listB.push([answer_val_map[ndx], order, isOp]);
+			if (order !== -1) { 
+				var coNdx = order - aItems;
+				isOp = (contentsOpts[coNdx].shape === 'circ'); 
+			}
+			listB.push([answer_val_map[ndx], order !== -1 ? order - aItems + 1 : null, isOp]);
 		});
 
 		var out = {
@@ -685,16 +662,17 @@ console.log('makeIntList out', out);
 
 	//=======================================================
 	//=======================================================
-	function valueToPresentationData(value, presentation_data) {
-		var choices = [];
+	function valueToEndOfCourse(value, end_of_course) {
+		var end_of_course = end_of_course[0];
+		var presentation_data = JSON.parse(end_of_course.presentation_data);
 		var a = [];
 		var order = [];
 		var partA = [];
-		var partB = presentation_data.interactive_frames[2].contents;;
+		var partB = presentation_data.interactive_frames[2].contents;
 		var options = [];
 		var answer_val_map = [];
+
 		$.each(value, function(idx, val) {
-			choices.push(val[0]);
 			answer_val_map.push(val[0]);
 			if (val[1] === null) {
 				partA.push(idx);
@@ -702,8 +680,10 @@ console.log('makeIntList out', out);
 			else {
 				options.push(idx);
 			}
-			if (val[1]) {
-				partB[0].shape = val[2] ? 'circ' : 'rect';
+			if (val[1]) { // indicates order for items in frame B.
+				var bNdx = val[1] - 1;
+				if (!partB[bNdx]) partB[bNdx] = {};
+				partB[bNdx].shape = val[2] ? 'circ' : 'rect';
 			}
 			if (val[1] === null && val[2] || val[1]) {
 				a.push(idx);
@@ -714,8 +694,8 @@ console.log('makeIntList out', out);
 		presentation_data.interactive_frames[0].contents = options;
 		presentation_data.interactive_frames[1].contents = partA;
 		presentation_data.interactive_frames[2].contents = partB;
-console.log('rebuild presentation_data', presentation_data);
-		return presentation_data;
+
+		return [end_of_course];
 	}
 
 })();

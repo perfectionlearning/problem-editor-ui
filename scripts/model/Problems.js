@@ -213,12 +213,16 @@
 		parse: function(response) {
 			if (response === undefined || (isArray(response) && response.length === 0))
 				return;
-console.log('Problem model parse', response);
+/*
 if (response.ansType === 'dragDrop') {
-    response.presentation_data = JSON.parse(response.skill);
-    response.skill = '';
+	var end_of_course = response.end_of_course && response.end_of_course[0] || {};
+	response.order_matters = end_of_course.order_matters || false;
+	response.part_credit_allowed = end_of_course.part_credit_allowed || false;
+	response.presentation_data = JSON.parse(end_of_course.presentation_data) || {};
 console.log('parsed presentation data', response.presentation_data);
+console.log('parsed answer data', response.a);
 }
+*/
 			var out = cleanModel(response);
 
 			// Deal with embedded collection
