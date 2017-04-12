@@ -13,111 +13,6 @@
 		colHeadersA: ['Part  A Variables', 'Is Correct'],
 		colHeadersB: ['Part  B Variables', 'Sequence', 'Is Operator'],
 
-		JSONTemplate: {
-			a: "3,9,12,7,16,10",
-			presentation_data: {
-				answer_val_map: {
-					"0": "x = day of the week",
-					"1": "x = weekly expenses",
-					"2": "x = weekly income",
-					"3": "x = number of weeks",
-					"4": "1,000",
-					"5": "3,200",
-					"6": "4,500",
-					"7": "10,000",
-					"8": "1,000x",
-					"9": "3,200x",
-					"10": "4,500x",
-					"11": "10,000x",
-					"12": "+",
-					"13": "-",
-					"14": "*",
-					"15": "\/",
-					"16": "="
-				},
-				interactive_frames: [
-					{
-						title: 'Options',
-						title_display: null,
-						orientation: 'left',
-						style: 'vertical_content_box',
-						contents: [4,5,6,7,8,9,10,11,12,13,14,15,16],
-						interaction_method: 'drag-elements',
-						content_display_columns: 1,
-						content_display_rows: 13,
-						maintain_contents_order: true,
-						sends_answer: false
-					},
-					{
-						title: 'Part A: Variable Choices',
-						title_display: 'h3, bold, left-top',
-						orientation: 'right-top',
-						style: 'standard_content_box',
-						contents: [0,1,2,3],
-						interaction_method: 'select-elements-single',
-						content_display_columns: 2,
-						content_display_rows: 2,
-						maintain_contents_order: true,
-						sends_answer: false,
-						answer_modes: [
-							{
-								answer_slot: 0,
-								source: 'selection',
-								order: 0
-							}
-						]
-					},
-					{
-						title: 'Part B: Equation',
-						title_display: 'h3, bold, left-top',
-						orientation: 'right-top',
-						style: 'standard_drop_box',
-						contents: [
-							{"id": 0, "shape": "rect", "line": "dotted"},
-							{"id": 1, "shape": "circ", "line": "dotted"},
-							{"id": 2, "shape": "rect", "line": "dotted"},
-							{"id": 3, "shape": "circ", "line": "dotted"},
-							{"id": 4, "shape": "rect", "line": "dotted"}
-						],
-						interaction_method: 'drag-drop-elements',
-						external_drop_in: true,
-						content_display_columns: 5,
-						content_display_rows: 1,
-						maintain_contents_order: true,
-						sends_answer: false,
-						answer_modes: [
-							{
-								"answer_slot": 1,
-								"source": "contents.id.0",
-								"order": 0
-							},
-							{
-								"answer_slot": 2,
-								"source": "contents.id.1",
-								"order": 1
-							},
-							{
-								"answer_slot": 3,
-								"source": "contents.id.2",
-								"order": 2
-							},
-							{
-								"answer_slot": 4,
-								"source": "contents.id.3",
-								"order": 3
-							},
-							{
-								"answer_slot": 5,
-								"source": "contents.id.4",
-								"order": 4
-							}
-						]
-					},
-				],
-				type: 'fill_in_answers'
-			}	
-		},
-
 		//---------------------------------------
 		//---------------------------------------
 		events: {
@@ -282,7 +177,6 @@
 			var answers = this.$('.multi>input');
 			var orders = this.$('.text-input>input');
 			var offset = choices.length - orders.length;
-
 			var regex = /(<.+?)'(.*?)'(.*?>)/g;	// Convert all " to ' in the html for proper comparison
 
 			var data = [];
@@ -364,7 +258,7 @@
 			this.setData(val);
 
 			// Trigger change event
-			this.isDirty = !this.compare(this.value(), this.original);
+			this.isDirty = !this.compare(val, this.original);
 			this.$el.trigger('updated');
 		},
 
@@ -631,7 +525,14 @@
 			}
 			else {
 				var contentsOptsNdx = aNdx - aItems;
-				if (contentsOpts[contentsOptsNdx].shape === 'circ') {
+				if (!contentsOpts[contentsOptsNdx]) {
+					contentsOpts[contentsOptsNdx] = {
+						id: contentsOptsNdx,
+						line: 'dotted',
+						shape: 'rect'
+					};
+				}
+				else if (contentsOpts[contentsOptsNdx].shape === 'circ') {
 					checked.push(ndx);
 				}
 			}
