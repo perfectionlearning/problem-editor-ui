@@ -424,3 +424,25 @@ div.history-list {
 	right:58px;
 	z-index:10;
 }
+
+/* Review: End Of Course types */
+.eoc-rect {
+    float: left;
+    padding: 5px;
+    margin: 5px;
+    border: 1px dashed blue;
+    background-color: lightblue;
+}
+
+.eoc-circ {
+    float: left;
+    padding: 5px;
+    border: 1px dashed blue;
+    background-color: lightblue;
+    border-radius: 50px;
+    width: 18px;
+    height: 18px;
+    text-align: center;
+    margin: 5px;
+}
+

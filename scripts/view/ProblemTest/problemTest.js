@@ -16,6 +16,7 @@
 			MultKinetic: {input: 'renderMulti',  showAnswer: 'renderMultiAnswer', check: 'checkFree'},
 			radio:		 {input: 'renderRadio',  showAnswer: 'renderRadioAnswer', check: 'checkRadio'},
 			check:		 {input: 'renderCheck',  showAnswer: 'renderCheckAnswer', check: 'checkCheck'},
+			dragDrop:        {input: 'renderDragDrop', showAnswer: 'renderDragDropAnswer', check: 'checkDragDrop'},
 			VTPGraph:	 {input: 'renderGraph',  showAnswer: 'renderEqAnswer', check: 'checkEquiv'},
 			graphConst:	 {input: 'renderGraphConst',  showAnswer: 'renderEqAnswer', check: 'checkConst'},
 			multiPart:   {input: 'renderMultiPart', showAnswer: 'renderNoAnswer', check: 'checkEquiv'},
@@ -55,7 +56,6 @@
 		//---------------------------------------
 		//---------------------------------------
 		render: function() {
-
 			this.$el.empty();
 
 			$.each(this.stepReviewView, function(idx, view) {
@@ -242,6 +242,27 @@
 			this.$el.append('Open the steps');
 		},
 
+		//---------------------------------------
+		//---------------------------------------
+		renderDragDrop: function() {
+			var ans = this.model.get('a');
+			var end_of_course = this.model.get('end_of_course');
+			var parsed = app.EOC.parsePresentationData('dragDrop', this.model);
+			var blanks = parsed.bottomFrameBlanks;
+			var variable = parsed.variable;
+
+			var fmtBlanks = blanks.map((blank) => {
+				return '<div class="eoc-' + blank.shape + '">' + blank.answer + '</div>';
+			}).join(' ');
+
+			this.$el.append('<div>Top frame options: ' + parsed.topFrameOpts.join(', ') + '</div>');
+			this.$el.append('<div>Bottom frame options: ' + parsed.bottomFrameOpts.join(', ') + '</div>');
+			this.$el.append('<div>' + fmtBlanks + '</div><br clear="all">');
+			this.$el.append('<div>Where: ' + variable + '</div>');
+
+		},
+
+
 		//=======================================================
 		// Render answers
 		//=======================================================
@@ -320,6 +341,12 @@
 		//---------------------------------------
 		//---------------------------------------
 		renderNoAnswer: function(model) {
+		},
+
+		//---------------------------------------
+		//---------------------------------------
+		renderDragDropAnswer: function(model) {
+			console.log('renderDragDropAnswer');
 		},
 
 		//=======================================================
@@ -471,6 +498,12 @@
 			}
 
 			this.showResult(allCorrect);
+		},
+
+		//---------------------------------------
+		//---------------------------------------
+		checkDragDrop: function(model) {
+			console.log('checkDragDrop');
 		},
 
 		//=======================================================
