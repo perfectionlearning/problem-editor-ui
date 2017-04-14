@@ -60,12 +60,36 @@
 	);
 
 	//=======================================================
-	// Table: headClass, header, id, data, tableClass
+	// Table for drag and drop: headClass, header, id, data, tableClass
 	//=======================================================
 	app.templates.tableDragDrop = _.template(
 		'<div><span class="header <%= headClass %>"><%= header %>:</span></div>' +
 		'<% print(fw.makeTable(id, dataVariables, tableClass)); %>' +
-		'<% print(fw.makeTable(id, dataEquations, tableClass)); %>'
+		'<% print(fw.makeTable(bottom_id, dataEquations, tableClass)); %>'
+	);
+
+	//=======================================================
+	// Variable for drag and drop formula.
+	//=======================================================
+	app.templates.dragDropVariable = _.template(
+		'<div>Where: <%= variable %></div>'
+	);
+
+	//=======================================================
+	// Shape for drag and drop formula.
+	//=======================================================
+	app.templates.dragDropShape = _.template(
+		'<div class="eoc-<%= shape %>"><%= answer %></div>'
+	);
+
+	//=======================================================
+	// Drag and drop formula
+	//=======================================================
+	app.templates.dragDropPreview = _.template(
+		'<% blanks.forEach((blank) => { %>' +
+		'<%     print(app.templates.dragDropShape({ shape: blank.shape, answer: blank.answer })) %>' +
+		'<% }) %>' +
+		'<br clear="all">'
 	);
 
 	//=======================================================

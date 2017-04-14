@@ -251,14 +251,10 @@
 			var blanks = parsed.bottomFrameBlanks;
 			var variable = parsed.variable;
 
-			var fmtBlanks = blanks.map((blank) => {
-				return '<div class="eoc-' + blank.shape + '">' + blank.answer + '</div>';
-			}).join(' ');
-
 			this.$el.append('<div>Top frame options: ' + parsed.topFrameOpts.join(', ') + '</div>');
 			this.$el.append('<div>Bottom frame options: ' + parsed.bottomFrameOpts.join(', ') + '</div>');
-			this.$el.append('<div>' + fmtBlanks + '</div><br clear="all">');
-			this.$el.append('<div>Where: ' + variable + '</div>');
+			this.$el.append(app.templates.dragDropPreview({blanks: blanks}));
+			this.$el.append(app.templates.dragDropVariable({variable: variable}));
 
 		},
 

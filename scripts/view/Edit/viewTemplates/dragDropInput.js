@@ -3,6 +3,8 @@
 //=======================================================
 ;(function() {
 
+	var dragDropData;
+
 	//=======================================================
 	//=======================================================
 	app.DragDropView = app.PEView.extend({
@@ -28,6 +30,8 @@
 		//---------------------------------------
 		//---------------------------------------
 		initialize: function() {
+			dragDropData = app.EOC.parsePresentationData('dragDrop', this.model);
+
 			this.original = this.last = this.valueFromModel(this.options.original);
 			var data = this.valueFromModel(this.model);
 			this.isDirty = !this.compare(data, this.original);
@@ -52,6 +56,7 @@
 				this.$el.html(app.templates.tableDragDrop({
 					header: this.header,
 					id: 'multi' + app.ctr,
+					bottom_id: 'bott_multi' + app.ctr,
 					headClass: 'stopEdit',
 					tableClass: '',
 					dataVariables: {
@@ -73,7 +78,9 @@
 				fw.tableSetChecked(this.$el, data.checked);
 				// This should probably be done elsewhere.
 				this.$('#multi' + app.ctr + 'Add').btnAddRow({preAddCallBack: that.closeEditor}, that.changed);
+				this.$('#bott_multi' + app.ctr + 'Add').btnAddRow({preAddCallBack: that.closeEditor}, that.changed);
 				this.$('.multi' + app.ctr + 'Del').btnDelRow({preDelCallBack: that.closeEditor}, that.changed);
+				this.$('.bott_multi' + app.ctr + 'Del').btnDelRow({preDelCallBack: that.closeEditor}, that.changed);
 
 				app.ctr++;
 			}
@@ -83,6 +90,7 @@
 				this.$el.html(app.templates.tableDragDrop({
 					header: this.header,
 					id: 'multi' + app.ctr++,
+					bottom_id: 'bott_multi' + app.ctr,
 					headClass: 'startEdit',
 					tableClass: 'startEdit',
 					dataVariables: {
@@ -102,6 +110,9 @@
 				}));
 			}
 
+			this.$el.append(app.templates.dragDropPreview({ blanks: dragDropData.bottomFrameBlanks }));
+			this.$el.append(app.templates.dragDropVariable({variable: dragDropData.variable}));
+
 			app.jaxify(this.$el);
 			return this.el;
 		},
@@ -113,15 +124,18 @@
 		// because this item combines two different model fields.
 		//---------------------------------------
 		valueFromModel: function(model) {
+/*
 			if (!model) model = this.model;
 			if (model && model.get('end_of_course')) {
 				var end_of_course = model.get('end_of_course')[0];
 				var presentation_data = end_of_course.presentation_data || '{}';
-
 				presentation_data = JSON.parse(presentation_data);
 				var answers = (model && model.get(this.field)) || '';
 			}
-			var out = parsePresentationData(answers, presentation_data);
+//			var out = parsePresentationData(answers, presentation_data);
+*/
+			dragDropData = app.EOC.parsePresentationData('dragDrop', model);
+			var out = dragDropData.tableRows;
 			return out;
 		},
 
@@ -129,43 +143,9 @@
 		// Convert from internal format to model format
 		//---------------------------------------
 		valueToModel: function(value) {
-			var choices = [];
-			var partAans = [];
-			var partBans = [];
-			var order = [];
-			var partA = [];
-			var partB = [];
-			var options = [];
-			var answers_val_map = [];
-			$.each(value, function(idx, val) {
-				choices.push(val[0]);
-				answers_val_map.push(val[0]);
-				if (val[1] === null) {
-					partA.push(idx);
-				}
-				else {
-					options.push(idx);
-				}
-				if (val[1]) {
-					partB.push(
-						{
-							shape: (val[2] ? 'circ' : 'rect')
-						}
-					);
-				}
-				if ((val[1] === null) && val[2]) {
-					partAans.push(idx);
-				}
-				if (val[1]) {
-					var tmpNdx = val[1] - 1;
-					partBans[tmpNdx] = idx;
-				}
-			});
-			var a = partAans.concat(partBans);
-			var answers = a.join(',');
+			var obj = app.EOC.dragDropValues(value, this.model);
 
-//			this.model.set( { end_of_course: end_of_course } );
-			return [choices, answers];
+			return [obj.choices, obj.answers];
 		},
 
 		//---------------------------------------
@@ -211,12 +191,13 @@
 		setData: function(data) {
 			// Split data into choice and answer sections
 			var out = this.valueToModel(data);
-			var end_of_course = valueToEndOfCourse(data, this.model.get('end_of_course'));
+//			var end_of_course = valueToEndOfCourse(data, this.model.get('end_of_course'));
+			var adjusted = app.EOC.adjustDragDropModel(data, this.model);
 			// Update model
 			this.model.set({
-				end_of_course: end_of_course,
+				end_of_course: adjusted.end_of_course,
 				choices: out[0],
-				a: out[1]
+				a: adjusted.a
 			});
 		},
 
@@ -256,7 +237,7 @@
 
 			// Store it to the model
 			this.setData(val);
-
+			dragDropData = app.EOC.parsePresentationData('dragDrop', this.model);
 			// Trigger change event
 			this.isDirty = !this.compare(val, this.original);
 			this.$el.trigger('updated');
@@ -292,6 +273,8 @@
 				return;
 
 			var idx = this.$('.editme').index(ev.currentTarget);	// This MUST go before closeEditor! ev.currentTarget will soon be obsolete.
+
+			// This is all to get the value.
 			var data = this.valueFromModel(this.model);
 			var partA = data.partA;
 			var partB = data.partB;
@@ -301,6 +284,7 @@
 			else {
 				var row = data.partB[idx - data.partA.length];
 			}
+			// Got row; now extract value from it. The rest, we don't need.
 			var value = row[0];
 
 			// Close any existing editors -- This may cause a change event, which causes render(), which causes ev.currentTarget to be invalid!
@@ -495,19 +479,16 @@
 		});
 		return out;
 	}
-
+/*
 	//=======================================================
 	//=======================================================
 	function parsePresentationData(answersStr, presentation_data) {
 		answers = answersStr.split(',').map((a) => { return parseInt(a, 10); });
 		var answer_val_map = presentation_data.answer_val_map;
 		var interactive_frames = presentation_data.interactive_frames;
-		var opts = interactive_frames[2];
-		var partA = interactive_frames[1];
-		var partB = interactive_frames[0];
-		var contentsA = partA.contents;
-		var contentsB = partB.contents;
-		var contentsOpts = opts.contents;
+		var contentsA = interactive_frames[1].contents;
+		var contentsB = interactive_frames[0].contents;
+		var contentsOpts = interactive_frames[2].contents;
 		var lengthA = contentsA.length;
 
 		var answersA = [];
@@ -558,6 +539,7 @@
 			partA: listA,
 			partB: listB
 		};
+
 		return out;
 	}
 
@@ -598,5 +580,5 @@
 
 		return [end_of_course];
 	}
-
+*/
 })();
