@@ -231,9 +231,9 @@
 		});
 
 		var rows = {
-			partA: rowsA,
-			partB: rowsB,
-			checked: checkBoxes
+			partA: rowsA.length ? rowsA : [''],
+			partB: rowsB.length ? rowsB : [''],
+			checked: checkBoxes.length ? checkBoxes : ['']
 		};
 
 		return rows;		
