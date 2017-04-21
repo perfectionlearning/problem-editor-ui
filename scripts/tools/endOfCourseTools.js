@@ -6,63 +6,50 @@
 	    answer_val_map,
 	    interactive_frames
 	;
+
+	function sortByType(a, b) {
+		if (a[2] === b[2]) return 0;
+		else return a[2] < b[2] ? -1 : 1;
+	}
+
+	var operatorList = ['+', '-', '*', '/', '='];
 	app.EOC = {};
-	app.EOC.adjustDragDropModel = function(data, model) {
-		unpack_model(model); // Updates global variables with current model.
 
-		var labels = data.map((item) => { return item[0]; });;
+	//---------------------------------------
+	// Convert from internal format to model format
+	//---------------------------------------
+	app.EOC.adjustDragDropModel = function(dragDropRows, model, whichTable) {
+		unpack_model(model);
 
-		var bottomFrameOrder = [];
-		var topFrameKeys = []; // interactive_frame[1].contents
-		var bottomFrameKeys = []; // interactive_frame[0].contents
-		var bottomFrameBlanks = []; // interactive_frame[2].contents
-		var topFrameChecked = []; // top frame answers
-		var id = 0;
-		data.forEach((item, rowIdx) => {
-			if (item[1] === null) {
-				// Process row as belonging to top frame.
-				topFrameKeys.push(rowIdx);
-				if (item[2]) topFrameChecked.push(rowIdx); // Checked in top frame; add to list of answers.
+		var answerRows = [];
+		var equationRows = [];
+		answers = [];
+//		dragDropRows.sort(sortByType);
+		dragDropRows.forEach((row, idx) => {
+			if (row[1] > '') {
+				var seq = parseInt(row[1], 10) - 1;
+				answers[seq] = idx;
 			}
-			else {
-				// Process row as belonging to bottom frame.
-				var isOperator = item[2];
-				bottomFrameKeys.push(rowIdx);
-				if (item[1] !== '') { // bottom frame row has a sequence number entered.
-					bottomFrameOrder.push({
-						seq: parseInt(item[1]), // The number entered into the Sequence field. This will determine the placement of the row index in the answers list.
-						idx: rowIdx,
-						blank: {
-							id: id++,
-							shape: isOperator ? 'circ' : 'rect',
-							line: 'dotted'
-						}
-					}); 
-				}
+			if (row[2] === '1') {
+				answerRows.push(idx);
+			}
+			else if (row[2] === '2' || row[2] === '3') {
+				equationRows.push(idx);
 			}
 		});
-		bottomFrameOrder.sort((a, b) => { return a.seq < b.seq ? -1 : 1; });	
-		bottomFrameBlanks = bottomFrameOrder.map((item) => { return item.blank; });
-		answers = topFrameChecked.concat(bottomFrameOrder.map((item) => { return item.idx; }));
-		interactive_frames[0].contents = bottomFrameKeys;
-		interactive_frames[1].contents = topFrameKeys;
-		interactive_frames[2].contents = bottomFrameBlanks;
-		presentation_data = {
-			answer_val_map: labels,
-			interactive_frames: interactive_frames
-		};
-		
-		end_of_course = {
-			order_matters: true,
-			part_correct_allowed: false,
-			presentation_data: JSON.stringify(presentation_data)
-		};
+		presentation_data.answer_val_map = dragDropRows.map((row) => { return row[0]; });
+		presentation_data.interactive_frames[1].contents = answerRows;
+		presentation_data.interactive_frames[0].contents = equationRows;
 
-		// Set a, end_of_course model properties.
+		end_of_course.presentation_data = JSON.stringify(presentation_data);
+		end_of_course.presentation_data_debug = presentation_data;
+		
 		return {
 			a: answers.join(','),
+			choices: presentation_data.answer_val_map,
 			end_of_course: [end_of_course]
 		};
+		
 	};
 
 	app.EOC.parsePresentationData = function(type, model) {
@@ -70,33 +57,10 @@
 
 		var parsed;
 		if (type === 'dragDrop') {
-			parsed = parseDragDropFrames();
+			parsed = parseDragDrop();
 		}
 
 		return parsed;	
-	};
-
-	app.EOC.dragDropValues = function(value, model) {
-		unpack_model(model);
-
-		var choices = value.map((item) => { return item[0]; });
-		var partAans = [];
-		var partBans = [];
-		$.each(value, function(idx, val) {
-			if (val[1]) {
-				var tmpNdx = val[1] - 1;
-				if (!partBans[tmpNdx]) partBans[tmpNdx] = idx;
-			} else if ((val[1] === null) && val[2]) {
-				partAans.push(idx);
-			}
-		});
-
-		var answers = partAans.concat(partBans).join(',');
-
-		return {
-			choices: choices,
-			answers: answers
-		};
 	};
 
 	/*
@@ -131,20 +95,15 @@
 	};
 
 
-	var parseDragDropFrames = function() {
-		var topFrameOptions = interactive_frames[1] && interactive_frames[1].contents ? interactive_frames[1].contents : [];
-		var bottomFrameOptions = interactive_frames[0] && interactive_frames[0].contents ? interactive_frames[0].contents : [];
-		var bottomFrameBlanks = interactive_frames[2] && interactive_frames[2].contents ? interactive_frames[2].contents : [];
-		var variable = getDragDropVariable(topFrameOptions);
-		var blanks = formatBottomFrameAnswer(bottomFrameOptions, bottomFrameBlanks);
-		var frameOpts = formatFrameOpts(topFrameOptions, bottomFrameOptions);
-		var tableRows = getDragDropRows(topFrameOptions, bottomFrameOptions, bottomFrameBlanks);
+	var parseDragDrop = function() {
+		var answerOptions = interactive_frames[1] && interactive_frames[1].contents ? interactive_frames[1].contents : [];
+		var variable = getDragDropVariable(answerOptions);
+		var blanks = formatEquation();
+		var tableRows = getDragDropRows();
 
 		return {
 			variable: variable,
-			topFrameOpts: frameOpts.top,
-			bottomFrameOpts: frameOpts.bottom,
-			bottomFrameBlanks: blanks,
+			equationBlanks: blanks,
 			tableRows: tableRows
 		};
 	};
@@ -162,17 +121,19 @@
 		return variable;
 	};
 
-	var formatBottomFrameAnswer = function(bottomFrameOptions, bottomFrameBlanks) {
-		var bottomFrameAnswer = [];
+	var formatEquation = function() {
+		var equationOptions = interactive_frames[0] && interactive_frames[0].contents ? interactive_frames[0].contents : [];
+		var equationBlanks = interactive_frames[2] && interactive_frames[2].contents ? interactive_frames[2].contents : [];
+		var equation = [];
 		answers.forEach((item) => {
-			if (bottomFrameOptions.indexOf(item) !== -1) {
-				bottomFrameAnswer.push(item);
+			if (equationOptions.indexOf(item) !== -1) {
+				equation.push(item);
 			}	
 		});
 
 		var blanks = [];
-		bottomFrameBlanks.forEach((blank, idx) => {
-			var ansIdx = bottomFrameAnswer[idx];
+		equationBlanks.forEach((blank, idx) => {
+			var ansIdx = equation[idx];
 			blanks.push({
 				shape: blank.shape,
 				answer: answer_val_map[ansIdx]
@@ -182,60 +143,21 @@
 		return blanks;
 	};
 
-	var formatFrameOpts = function(topFrameIndexes, bottomFrameIndexes) {
-		var topFrameLabels = [];
-		var bottomFrameLabels = [];
+
+	var getDragDropRows = function() {
+		var answerIdxs = interactive_frames[1] && interactive_frames[1].contents ? interactive_frames[1].contents : [];
+		var equationIdxs = interactive_frames[0] && interactive_frames[0].contents ? interactive_frames[0].contents : [];
+		var operatorIdxs = equationIdxs.filter((item) => { return operatorList.indexOf(answer_val_map[item]) !== -1; });
+		equationIdxs = equationIdxs.filter((item) => { return operatorIdxs.indexOf(item) === -1; });
+		var tableRows = [];
 		answer_val_map.forEach((item, idx) => {
-			if (topFrameIndexes.indexOf(idx) !== -1) {
-				topFrameLabels.push(item);
-			}
-			if (bottomFrameIndexes.indexOf(idx) !== -1) {
-				bottomFrameLabels.push(item);
-			}
+			var type = '--';
+			if (answerIdxs.indexOf(idx) !== -1) type = 'Answer';
+			else if (equationIdxs.indexOf(idx) !== -1) type = 'Equation item';
+			else if (operatorIdxs.indexOf(idx) !== -1) type = 'Operator';
+			tableRows.push([item, type, answers.indexOf(idx)+1]);
 		});
 
-		var opts = {
-			top: topFrameLabels,
-			bottom: bottomFrameLabels
-		};
-
-		return opts;
-	};
-
-
-	var getDragDropRows = function(topFrameIndexes, bottomFrameIndexes, bottomFrameBlanks) {
-		var checkBoxes = [];
-		var rowsA = [];
-		var rowsB = [];
-		var aItems = 0;
-		topFrameIndexes.forEach((ndx) => {
-			var checked = (answers.indexOf(ndx) !== -1) ? 1 : 0;
-			rowsA.push([answer_val_map[ndx], checked]);
-			if (checked) {
-				aItems++;
-				checkBoxes.push(ndx);
-			}
-		});
-
-		bottomFrameIndexes.forEach((ndx) => {
-			var order = answers.indexOf(ndx);
-			var isOp = false;
-			if (order !== -1) { 
-				var coNdx = order - aItems;
-				isOp = (bottomFrameBlanks[coNdx].shape === 'circ'); 
-			}
-			rowsB.push([answer_val_map[ndx], order !== -1 ? order - aItems + 1 : null, isOp]);
-			if (isOp) {
-				checkBoxes.push(ndx);
-			}
-		});
-
-		var rows = {
-			partA: rowsA.length ? rowsA : [''],
-			partB: rowsB.length ? rowsB : [''],
-			checked: checkBoxes.length ? checkBoxes : ['']
-		};
-
-		return rows;		
+		return tableRows;
 	};
 })();

@@ -92,6 +92,14 @@
 					break;
 				// else fall through to default.  Don't add anything under this case.  THIS IS BAD PRACTICE!
 
+			case 'ddseq':
+				cellData = fw.templates.tableDDSeq({data: data});
+				break;
+
+			case 'ddtype':
+				cellData = fw.templates.tableDDType({types: ['--', 'Answer', 'Equation item', 'Operator', 'Text'], data: data});
+				break;
+
 			default:
 				if (!defined(data) || data === '')
 					data = '&nbsp;';
@@ -134,6 +142,7 @@
 					col: c,
 					obj: obj
 				}));
+
 			var row = fw.templates.tableRow({ cells: cells.join('') });
             rows.push(row);
             cells = [];

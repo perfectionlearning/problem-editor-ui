@@ -83,6 +83,41 @@
     );
 
 	//=======================================================
+	// Drag-and-drop sequence (from table.js): data, style
+	//=======================================================
+    fw.templates.tableDDSeq = _.template(
+        '<td>' +
+		'<select>' +
+		'<option value="">--</option>' +
+		'<% for (var seq = 1; seq <= 10; seq++) { %>' +
+		'	<% if (seq === data) { %>' +
+		'	<option value="<%= seq %>" selected><%= seq %></option>' +
+		'	<% } else { %>' +
+		'   <option value="<%= seq %>"><%= seq %></option>' +
+		'	<% } %>' +
+		'<% } %>' +
+		'</select>' +
+		'</td>'
+    );
+
+	//=======================================================
+	// Drag-and-drop type (from table.js): data, style
+	//=======================================================
+    fw.templates.tableDDType = _.template(
+        '<td>' +
+		'<select>' +
+		'<% types.forEach(function(item, idx) { %>' +
+		'	<% if (item === data) { %>' +
+		'   <option value="<%= idx %>" selected><%= item %></option>' +
+		'	<% } else { %>' +
+		'   <option value="<%= idx %>"><%= item %></option>' +
+		'	<% } %>' +
+		'<% }) %>' +
+		'</select>' +
+		'</td>'
+    );
+
+	//=======================================================
 	// tableTrueFalseInput (from table.js): selected
 	//=======================================================
     fw.templates.tableTrueFalseInput = _.template(

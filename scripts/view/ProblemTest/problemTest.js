@@ -248,11 +248,9 @@
 			var ans = this.model.get('a');
 			var end_of_course = this.model.get('end_of_course');
 			var parsed = app.EOC.parsePresentationData('dragDrop', this.model);
-			var blanks = parsed.bottomFrameBlanks;
+			var blanks = parsed.equationBlanks;
 			var variable = parsed.variable;
 
-			this.$el.append('<div>Top frame options: ' + parsed.topFrameOpts.join(', ') + '</div>');
-			this.$el.append('<div>Bottom frame options: ' + parsed.bottomFrameOpts.join(', ') + '</div>');
 			this.$el.append(app.templates.dragDropPreview({blanks: blanks}));
 			this.$el.append(app.templates.dragDropVariable({variable: variable}));
 

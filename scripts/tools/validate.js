@@ -352,7 +352,7 @@
 		// Specifically allow no answer (none of the above)
 		if ((all.length === 1) && all[0] === '')
 			return;
-console.log('validate answerDragDrop choices, all', choices, all);
+
 		for (var i = 0; i < all.length; i++)
 		{
 			var sel = parseInt(all[i]);

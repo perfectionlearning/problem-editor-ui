@@ -64,8 +64,7 @@
 	//=======================================================
 	app.templates.tableDragDrop = _.template(
 		'<div><span class="header <%= headClass %>"><%= header %>:</span></div>' +
-		'<% print(fw.makeTable(id, dataVariables, tableClass)); %>' +
-		'<% print(fw.makeTable(bottom_id, dataEquations, tableClass)); %>'
+		'<% print(fw.makeTable(id, data, tableClass)); %>'
 	);
 
 	//=======================================================
@@ -86,9 +85,11 @@
 	// Drag and drop formula
 	//=======================================================
 	app.templates.dragDropPreview = _.template(
+		'<div>' +
 		'<% blanks.forEach((blank) => { %>' +
 		'<%     print(app.templates.dragDropShape({ shape: blank.shape, answer: blank.answer })) %>' +
 		'<% }) %>' +
+		'</div>' +
 		'<br clear="all">'
 	);
 

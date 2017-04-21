@@ -12,8 +12,7 @@
 		compare: app.objectCompare,
 		field: 'a',
 
-		colHeadersA: ['Part  A Variables', 'Is Correct'],
-		colHeadersB: ['Part  B Variables', 'Sequence', 'Is Operator'],
+		colHeaders: ['Desc', 'Type', 'Seq'],
 
 		//---------------------------------------
 		//---------------------------------------
@@ -50,69 +49,49 @@
 			var that = this;
 			var data = this.valueFromModel(this.model);
 			this.prettifyChoices(data);
-			if (this.options.edit)
-			{
-				// Create a table, then convert it to a flex table
-				this.$el.html(app.templates.tableDragDrop({
+			var blanks = dragDropData.equationBlanks;
+			var variable = dragDropData.variable;
+			this.$el.html(app.templates.dragDropPreview({blanks: blanks}));
+			this.$el.append(app.templates.dragDropVariable({variable: variable}));
+			if (this.options.edit) {
+				this.$el.append(app.templates.tableDragDrop({
 					header: this.header,
-					id: 'multi' + app.ctr,
-					bottom_id: 'bott_multi' + app.ctr,
+					id: 'dd' + app.ctr,
 					headClass: 'stopEdit',
 					tableClass: '',
-					dataVariables: {
-						columns: ['richEdit', this.type, 'flex'],
-						headers: this.colHeadersA,
+					data: {
+						columns: ['richEdit', 'ddType', 'ddSeq', 'flex'],
+						headers: this.colHeaders,
 						inpWidth: 50,
-						data: data.partA,
-						noSanitize: true
-					},
-					dataEquations: {
-						columns: ['richEdit', 'numinput', this.type, 'flex'],
-						inpWidth: 10,
-						headers: this.colHeadersB,
-						data: data.partB,
+						data: data,
 						noSanitize: true
 					}
 				}));
-				var field = this.model.get(that.field);
-				fw.tableSetChecked(this.$el, data.checked);
+
 				// This should probably be done elsewhere.
-				this.$('#multi' + app.ctr + 'Add').btnAddRow({preAddCallBack: that.closeEditor}, that.changed);
-				this.$('#bott_multi' + app.ctr + 'Add').btnAddRow({preAddCallBack: that.closeEditor}, that.changed);
-				this.$('.multi' + app.ctr + 'Del').btnDelRow({preDelCallBack: that.closeEditor}, that.changed);
-				this.$('.bott_multi' + app.ctr + 'Del').btnDelRow({preDelCallBack: that.closeEditor}, that.changed);
+				this.$('#dd' + app.ctr + 'Add').btnAddRow({preAddCallBack: that.closeEditor}, that.changed);
+				this.$('.dd' + app.ctr + 'Del').btnDelRow({preDelCallBack: that.closeEditor}, that.changed);
 
 				app.ctr++;
 			}
-			else
-			{
+			else {
 				// Read-only table view
-				this.$el.html(app.templates.tableDragDrop({
+				this.$el.append(app.templates.tableDragDrop({
 					header: this.header,
-					id: 'multi' + app.ctr++,
-					bottom_id: 'bott_multi' + app.ctr,
+					id: 'dd' + app.ctr++,
 					headClass: 'startEdit',
 					tableClass: 'startEdit',
-					dataVariables: {
-						columns: ['raw', 'showCheck'],
-						headers: this.colHeadersA,
-						data: data.partA,
+					data: {
+						columns: ['richEdit', 'ddType', 'ddSeq'],
+						headers: this.colHeaders,
+						inpWidth: 50,
+						data: data,
 						noSanitize: true
-					},
-					dataEquations: {
-						columns: ['raw', 'numinput', 'showCheck'],
-						inpWidth: 10,
-						headers: this.colHeadersB,
-						data: data.partB,
-						noSanitize: true
-					},
-					message: 'Hi, there!'
+					}
 				}));
 			}
 
-			this.$el.append(app.templates.dragDropPreview({ blanks: dragDropData.bottomFrameBlanks }));
-			this.$el.append(app.templates.dragDropVariable({variable: dragDropData.variable}));
-
+			$('table tbody').sortable();
 			app.jaxify(this.$el);
 			return this.el;
 		},
@@ -124,28 +103,9 @@
 		// because this item combines two different model fields.
 		//---------------------------------------
 		valueFromModel: function(model) {
-/*
-			if (!model) model = this.model;
-			if (model && model.get('end_of_course')) {
-				var end_of_course = model.get('end_of_course')[0];
-				var presentation_data = end_of_course.presentation_data || '{}';
-				presentation_data = JSON.parse(presentation_data);
-				var answers = (model && model.get(this.field)) || '';
-			}
-//			var out = parsePresentationData(answers, presentation_data);
-*/
 			dragDropData = app.EOC.parsePresentationData('dragDrop', model);
 			var out = dragDropData.tableRows;
 			return out;
-		},
-
-		//---------------------------------------
-		// Convert from internal format to model format
-		//---------------------------------------
-		valueToModel: function(value) {
-			var obj = app.EOC.dragDropValues(value, this.model);
-
-			return [obj.choices, obj.answers];
 		},
 
 		//---------------------------------------
@@ -153,25 +113,16 @@
 		// our internal format
 		//---------------------------------------
 		value: function() {
-			var choices = this.$('.editme>div');
-			var answers = this.$('.multi>input');
-			var orders = this.$('.text-input>input');
-			var offset = choices.length - orders.length;
-			var regex = /(<.+?)'(.*?)'(.*?>)/g;	// Convert all " to ' in the html for proper comparison
-
+			var rows = this.$('.editme>div');
 			var data = [];
-			for (var i = 0, len = choices.length; i < len; i++)
-			{
-				var entry = app.removeMathJax(choices[i].innerHTML);
-				entry = app.restoreMathML(entry);
-				if (entry === '&nbsp;' || entry === ' ' || entry === '\u00A0')
-					entry = '';
-
-				var checked = answers[i].checked;
-				var order = i >= offset ? orders[i-offset].value : null;
-
-				data.push([entry, order, checked])
-			}
+			$.each(rows, (idx, row) => {
+				var entry = $(row).html();
+				var typeEl = $(row).parent().next();
+				var seqEl = $(typeEl).next();
+				var type = typeEl.find('select').val();
+				var seq = seqEl.find('select').val();
+				data.push([entry, seq, type]);
+			});
 
 			return data;
 		},
@@ -189,14 +140,11 @@
 		// that this view controls.
 		//---------------------------------------
 		setData: function(data) {
-			// Split data into choice and answer sections
-			var out = this.valueToModel(data);
-//			var end_of_course = valueToEndOfCourse(data, this.model.get('end_of_course'));
 			var adjusted = app.EOC.adjustDragDropModel(data, this.model);
 			// Update model
 			this.model.set({
 				end_of_course: adjusted.end_of_course,
-				choices: out[0],
+				choices: adjusted.choices,
 				a: adjusted.a
 			});
 		},
@@ -274,18 +222,8 @@
 
 			var idx = this.$('.editme').index(ev.currentTarget);	// This MUST go before closeEditor! ev.currentTarget will soon be obsolete.
 
-			// This is all to get the value.
 			var data = this.valueFromModel(this.model);
-			var partA = data.partA;
-			var partB = data.partB;
-			if (idx < data.partA.length) {
-				var row = data.partA[idx];
-			}
-			else {
-				var row = data.partB[idx - data.partA.length];
-			}
-			// Got row; now extract value from it. The rest, we don't need.
-			var value = row[0];
+			var value = data[idx][0];
 
 			// Close any existing editors -- This may cause a change event, which causes render(), which causes ev.currentTarget to be invalid!
 			this.closeEditor();
@@ -343,8 +281,7 @@
 			// but if the UI is modified at all there could be.
 			// The day has come.  We need a change event.  However, it's causing a crash some of the time.
 			// The solution was to stop rendering on change events.
-			if (hasChanged)
-				this.changed();
+			if (hasChanged) this.changed();
 
 			// Similar to the button, if there's no change there's no render. Any MathML won't be MathJaxed.
 			// The only time we care about this is when MathML is present. Ironically (or sadly), if there's
@@ -479,106 +416,4 @@
 		});
 		return out;
 	}
-/*
-	//=======================================================
-	//=======================================================
-	function parsePresentationData(answersStr, presentation_data) {
-		answers = answersStr.split(',').map((a) => { return parseInt(a, 10); });
-		var answer_val_map = presentation_data.answer_val_map;
-		var interactive_frames = presentation_data.interactive_frames;
-		var contentsA = interactive_frames[1].contents;
-		var contentsB = interactive_frames[0].contents;
-		var contentsOpts = interactive_frames[2].contents;
-		var lengthA = contentsA.length;
-
-		var answersA = [];
-		var answersB = [];		
-		var checked = [];
-		var listA = [];
-		var listB = [];
-
-		var aItems = 0;
-
-		answers.forEach((ndx, aNdx) => {
-			if (ndx < lengthA) {
-				aItems++;
-				checked.push(ndx);
-			}
-			else {
-				var contentsOptsNdx = aNdx - aItems;
-				if (!contentsOpts[contentsOptsNdx]) {
-					contentsOpts[contentsOptsNdx] = {
-						id: contentsOptsNdx,
-						line: 'dotted',
-						shape: 'rect'
-					};
-				}
-				else if (contentsOpts[contentsOptsNdx].shape === 'circ') {
-					checked.push(ndx);
-				}
-			}
-		});
-
-		contentsA.forEach((ndx) => {
-			var checked = (answers.indexOf(ndx) !== -1) ? 1 : 0;
-			listA.push([answer_val_map[ndx], checked]);
-		});
-
-		contentsB.forEach((ndx) => {
-			var order = answers.indexOf(ndx);
-			var isOp = false;
-			if (order !== -1) { 
-				var coNdx = order - aItems;
-				isOp = (contentsOpts[coNdx].shape === 'circ'); 
-			}
-			listB.push([answer_val_map[ndx], order !== -1 ? order - aItems + 1 : null, isOp]);
-		});
-
-		var out = {
-			checked: checked,
-			partA: listA,
-			partB: listB
-		};
-
-		return out;
-	}
-
-	//=======================================================
-	//=======================================================
-	function valueToEndOfCourse(value, end_of_course) {
-		var end_of_course = end_of_course[0];
-		var presentation_data = JSON.parse(end_of_course.presentation_data);
-		var a = [];
-		var order = [];
-		var partA = [];
-		var partB = presentation_data.interactive_frames[2].contents;
-		var options = [];
-		var answer_val_map = [];
-
-		$.each(value, function(idx, val) {
-			answer_val_map.push(val[0]);
-			if (val[1] === null) {
-				partA.push(idx);
-			}
-			else {
-				options.push(idx);
-			}
-			if (val[1]) { // indicates order for items in frame B.
-				var bNdx = val[1] - 1;
-				if (!partB[bNdx]) partB[bNdx] = {};
-				partB[bNdx].shape = val[2] ? 'circ' : 'rect';
-			}
-			if (val[1] === null && val[2] || val[1]) {
-				a.push(idx);
-			}
-		});
-
-		presentation_data.answer_val_map = answer_val_map;
-		presentation_data.interactive_frames[0].contents = options;
-		presentation_data.interactive_frames[1].contents = partA;
-		presentation_data.interactive_frames[2].contents = partB;
-
-		return [end_of_course];
-	}
-*/
 })();
